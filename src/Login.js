@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [mode, setMode] = useState("signup");
+  let navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -58,7 +60,8 @@ function Signup() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    alert("Login successful (frontend test only)");
+    navigate("/home");
+    //alert("Login successful (frontend test only)");
   };
 
   const handleForgotPassword = (e) => {

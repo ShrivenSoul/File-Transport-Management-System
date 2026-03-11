@@ -1,13 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import './index.css';
 import App from './App';
+import LandingPage from './LandingPage';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <Routes>
+        <Route path="/CDS-capstone" element={<App/>}/>
+        <Route path="/home" element={<LandingPage/>}/>
+      </Routes>
+    </Router>
   </React.StrictMode>
 );
 
