@@ -1,6 +1,22 @@
+import React from "react";
+import "./LandingPage.css";
 
 function LandingPage(){
-    return <div><h1>Hi</h1></div>;
+    return (<>
+    <header>
+        <div>
+        <h1>Cross Domain Solutions</h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <h2>do your magic here</h2>
+        </ul>
+    </nav>
+    <div>
+        <h1>| nav ends here</h1>
+    </div>
+    </>);
 }
 
 export default LandingPage;

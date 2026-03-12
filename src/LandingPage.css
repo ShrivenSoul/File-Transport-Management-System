@@ -1,0 +1,10 @@
+header {
+    background-color: gray;
+    padding: .5rem;
+}
+
+nav {
+    float: left;
+    background-color: lightgray;
+    width: 20%;
+}
