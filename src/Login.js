@@ -74,14 +74,15 @@ function Signup() {
     maxWidth: "400px",
     margin: "80px auto",
     padding: "30px",
-    border: "1px solid #ddd",
+    border: "1px solid #ccc",
+    background: "#ddd",
     borderRadius: "10px",
     textAlign: "center",
     fontFamily: "Arial",
   };
 
   const inputStyle = {
-    width: "100%",
+    width: "93%",
     padding: "10px",
     margin: "10px 0",
   };
