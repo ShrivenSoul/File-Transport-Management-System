@@ -1,5 +1,6 @@
 import React from "react";
 import "./LandingPage.css";
+import { Link } from "react-router-dom";
 
 function LandingPage(){
     return (<>
@@ -13,7 +14,11 @@ function LandingPage(){
             <h2>User Name</h2>
         </ul>
         <ul>
-            <h2>Home</h2>
+            <li>
+                 <Link to="/CDS-capstone">
+             <h2>Home</h2>
+                </Link>
+            </li>
         </ul>
          <ul>
             <h2>Upload Files</h2>
@@ -22,7 +27,11 @@ function LandingPage(){
             <h2>Admin Privillegs</h2>
         </ul>
         <ul>
-            <h2>Sign Out</h2>
+            <li>
+                 <Link to="/CDS-capstone">
+             <h2>Sign Out</h2>
+                </Link>
+            </li>
         </ul>
     </nav>
     <div>
