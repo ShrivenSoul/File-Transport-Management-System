@@ -1,3 +1,7 @@
+/**
+ * connects other files to proper AWS database
+ */
+
 const awsConfig = {
   Auth: {
     Cognito: {

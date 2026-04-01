@@ -4,6 +4,7 @@ import {
   signUp,
   confirmSignUp,
   signIn,
+  signOut,
   resetPassword,
   confirmResetPassword
 } from "aws-amplify/auth";
@@ -30,6 +31,11 @@ function Signup() {
     "One special character",
   ];
 
+  /**
+   * confirms user password has correct requirements
+   * @param {string} password
+   * @returns {Array} list of unmet requirements
+   */
   const validatePassword = (password) => {
     const errors = [];
 
@@ -44,12 +50,20 @@ function Signup() {
 
   const passwordErrors = validatePassword(formData.password);
 
+  /**
+   * Handles any user input changes and updates state
+   * @param {object} e - event object
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ SIGNUP
+  /**
+   * Handles user signup using AWS Cognito
+   * Validates password and sends signup request to AWS
+   * @param {object} e - event object
+   */
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
@@ -81,7 +95,11 @@ function Signup() {
     }
   };
 
-  // ✅ CONFIRM SIGNUP
+  /**
+   * Confirms user signup using verification code
+   * Verification code is sent to the user's email
+   * @param {object} e - event object
+   */
   const handleConfirmSignup = async (e) => {
     e.preventDefault();
     setError("");
@@ -99,12 +117,20 @@ function Signup() {
     }
   };
 
-  // ✅ LOGIN
+  /**
+   * Handles user login using AWS Cognito
+   * Signs out any existing user first to avoid session conflicts
+   * Redirects to home page on success
+   * @param {object} e - event object
+   */
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
+      // 🔥 Fix: clear any existing session
+      await signOut();
+
       await signIn({
         username: formData.email,
         password: formData.password,
@@ -116,7 +142,10 @@ function Signup() {
     }
   };
 
-  // ✅ SEND RESET CODE
+  /**
+   * Sends password reset code to user's email
+   * @param {object} e - event object
+   */
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setError("");
@@ -132,7 +161,10 @@ function Signup() {
     }
   };
 
-  // ✅ RESET PASSWORD
+  /**
+   * Confirms password reset with verification code
+   * @param {object} e - event object
+   */
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setError("");
@@ -184,7 +216,6 @@ function Signup() {
         <button onClick={() => setMode("login")}>Login</button>
       </div>
 
-      {/* SIGNUP */}
       {mode === "signup" && (
         <form onSubmit={handleSignup}>
           <input style={inputStyle} name="email" type="email" placeholder="Email" onChange={handleChange} required />
@@ -210,7 +241,6 @@ function Signup() {
         </form>
       )}
 
-      {/* VERIFY */}
       {mode === "confirmSignup" && (
         <form onSubmit={handleConfirmSignup}>
           <input style={inputStyle} name="verificationCode" placeholder="Verification Code" onChange={handleChange} required />
@@ -219,7 +249,6 @@ function Signup() {
         </form>
       )}
 
-      {/* LOGIN */}
       {mode === "login" && (
         <>
           <form onSubmit={handleLogin}>
@@ -239,7 +268,6 @@ function Signup() {
         </>
       )}
 
-      {/* FORGOT PASSWORD */}
       {mode === "forgotPassword" && (
         <form onSubmit={handleForgotPassword}>
           <input style={inputStyle} name="forgotPasswordEmail" type="email" placeholder="Enter your email" onChange={handleChange} required />
@@ -248,7 +276,6 @@ function Signup() {
         </form>
       )}
 
-      {/* RESET PASSWORD */}
       {mode === "resetPassword" && (
         <form onSubmit={handleResetPassword}>
           <input style={inputStyle} name="verificationCode" placeholder="Verification Code" onChange={handleChange} required />
