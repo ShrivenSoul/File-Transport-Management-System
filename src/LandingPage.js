@@ -24,7 +24,7 @@ function LandingPage(){
             <h2>Upload Files</h2>
         </ul>
         <ul>
-            <h2>Admin Privillegs</h2>
+            <h2>Admin Privileges</h2>
         </ul>
         <ul>
             <li>
