@@ -8,6 +8,22 @@
 # testing
 /coverage
 
+#Environment variables
+.env
+
+# Uploads (multer temp files)
+uploads/
+
+# Python
+__pycache__/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
 # production
 /build
 

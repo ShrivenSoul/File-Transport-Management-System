@@ -1,6 +1,12 @@
 header {
     background-color: gray;
     padding: .5rem;
+    padding-left: 2rem;
+    border-bottom: 5px solid #000;
+    font-family: 'Noto Sans', sans-serif;
+}
+ul {
+    list-style-type: none;
 }
 
 nav {

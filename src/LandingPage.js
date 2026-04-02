@@ -35,7 +35,7 @@ function LandingPage(){
         </ul>
     </nav>
     <div>
-        <h1>| nav ends here</h1>
+        <p>| nav ends here</p>
     </div>
     </>);
 }
