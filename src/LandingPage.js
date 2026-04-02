@@ -10,11 +10,14 @@ function LandingPage(){
     </header>
     <nav>
         <ul>
-            <h2>do your magic here</h2>
+            <li>User's Name</li>
+            <li>Home</li>
+            <li>Upload File</li>
+            <li>Admin Page</li>
         </ul>
     </nav>
     <div>
-        <h1>| nav ends here</h1>
+        <p>| nav ends here</p>
     </div>
     </>);
 }
