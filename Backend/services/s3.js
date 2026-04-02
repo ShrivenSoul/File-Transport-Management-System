@@ -1,4 +1,5 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 import "dotenv/config";
 
@@ -9,6 +10,7 @@ const s3 = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_KEY,
   },
 });
+
 
 export async function uploadToS3(filePath, fileName) {
   const fileStream = fs.createReadStream(filePath);
@@ -22,4 +24,15 @@ export async function uploadToS3(filePath, fileName) {
   await s3.send(command);
 
   return `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${fileName}`;
+}
+export async function getDownloadUrl(fileName) {
+  const command = new GetObjectCommand({
+    Bucket: process.env.S3_BUCKET,
+    Key: fileName,
+  });
+  const url = await getSignedUrl(s3, command, {
+    expiresIn: 60, // 1 minute
+  });
+
+  return url;
 }

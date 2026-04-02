@@ -2,27 +2,12 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 
-import { uploadToS3 } from "./services/s3.js";
+import { uploadToS3, getDownloadUrl  } from "./services/s3.js";
 import { scanFile } from "./scanner/scan.js";
 
 const app = express();
 const upload = multer({ dest: "uploads/" });
 
-// app.post("/upload", upload.single("file"), (req, res) => {
-//   console.log("file:", req.file);
-//   console.log("body:", req.body);
-
-//   if (!req.file) {
-//     return res.status(400).json({ error: "No file received" });
-//   }
-
-//   res.json({
-//     message: "File received",
-//     originalname: req.file.originalname,
-//     storedAs: req.file.filename,
-//     path: req.file.path
-//   });
-// });
 
 app.post("/upload", upload.single("file"), async (req, res) => {
   const filePath = req.file.path;
@@ -48,6 +33,22 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Upload failed" });
+  }
+});
+
+app.get("/download/:filename", async (req, res) => {
+  const fileName = req.params.filename;
+
+  try {
+    const url = await getDownloadUrl(fileName);
+
+    res.json({
+      downloadUrl: url
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to generate download link" });
   }
 });
 
