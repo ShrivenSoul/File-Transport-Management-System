@@ -6,6 +6,11 @@ import App from './App';
 import LandingPage from './LandingPage';
 import reportWebVitals from './reportWebVitals';
 
+import { Amplify } from "aws-amplify";
+import awsConfig from "./aws-config";
+
+Amplify.configure(awsConfig);
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
