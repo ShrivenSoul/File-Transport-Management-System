@@ -3,11 +3,6 @@ import "./LandingPage.css";
 import { Link } from "react-router-dom";
 
 function LandingPage(){
-    const [setSelectedFile] = useState(null);
-    const onFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-        console.log(event.target.files[0]);
-    }
     const onFileUpload = async (event) => {
             console.log("File sent!");
             const formData = new FormData(document.querySelector("#fileInput"));
@@ -55,7 +50,7 @@ function LandingPage(){
     <div>
         <h3>Upload file here: </h3>
         <form encType="multipart/form-data" method="post" name="fileInput" id="fileInput">
-            <input type="file" name="file" onChange={onFileChange} />
+            <input type="file" name="file" />
         </form>
         <button onClick={onFileUpload}>Send to server!</button>
         <p>| nav ends here</p>
