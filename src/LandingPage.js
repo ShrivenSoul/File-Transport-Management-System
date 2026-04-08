@@ -15,7 +15,7 @@ function LandingPage(){
         </ul>
         <ul>
             <li>
-                 <Link to="/CDS-capstone">
+                 <Link to="/home">
              <h2>Home</h2>
                 </Link>
             </li>
@@ -24,8 +24,12 @@ function LandingPage(){
             <h2>Upload Files</h2>
         </ul>
         <ul>
+    <li>
+        <Link to="/admin">
             <h2>Admin Privileges</h2>
-        </ul>
+        </Link>
+    </li>
+</ul>
         <ul>
             <li>
                  <Link to="/CDS-capstone">
