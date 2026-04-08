@@ -17,7 +17,7 @@ root.render(
   <React.StrictMode>
     <Router>
       <Routes>
-        <Route path="/CDS-capstone" element={<App/>}/>
+        <Route path="/" element={<App/>}/>
         <Route path="/home" element={<LandingPage/>}/>
         <Route path="/admin" element={<AdminPage />} />
       </Routes>
