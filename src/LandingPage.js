@@ -1,8 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import "./LandingPage.css";
 import { Link } from "react-router-dom";
 
 function LandingPage(){
+    const onFileUpload = async (event) => {
+            console.log("File sent!");
+            const formData = new FormData(document.querySelector("#fileInput"));
+            console.log(formData);
+            // REPLACE LINK HERE WITH WHERE YOUR SERVER IS RUNNING
+            const response = await fetch("http://localhost:3000/upload", {
+                method: "POST",
+                body: formData,
+            }).then((response) => response.json()).then((data) => {console.log(data);});
+            console.log(response);
+            event.preventDefault();
+        }
+
     return (<>
     <header>
         <div>
@@ -15,7 +28,7 @@ function LandingPage(){
         </ul>
         <ul>
             <li>
-                 <Link to="/CDS-capstone">
+                 <Link to="/home">
              <h2>Home</h2>
                 </Link>
             </li>
@@ -24,8 +37,12 @@ function LandingPage(){
             <h2>Upload Files</h2>
         </ul>
         <ul>
-            <h2>Admin Privillegs</h2>
-        </ul>
+    <li>
+        <Link to="/admin">
+            <h2>Admin Privileges</h2>
+        </Link>
+    </li>
+</ul>
         <ul>
             <li>
                  <Link to="/CDS-capstone">
@@ -35,7 +52,12 @@ function LandingPage(){
         </ul>
     </nav>
     <div>
-        <h1>| nav ends here</h1>
+        <h3>Upload file here: </h3>
+        <form encType="multipart/form-data" method="post" name="fileInput" id="fileInput">
+            <input type="file" name="file" />
+        </form>
+        <button onClick={onFileUpload}>Send to server!</button>
+        <p>| nav ends here</p>
     </div>
     </>);
 }
