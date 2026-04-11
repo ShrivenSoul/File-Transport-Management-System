@@ -1,6 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import "./LandingPage.css";
 import { Link } from "react-router-dom";
+
+
+// Ignore for now
+//function LinktoDownload(fileName){
+//    const testFileDownloadUrl = fetch("http://localhost:3000/download/testFile.txt").then((res) => {res.json()}).then((res) => {window.location.href = res.downloadUrl});
+//    console.log(testFileDownloadUrl);
+    
+    //return <a target="_blank" rel="noopener noreferrer" href={testFileDownloadUrl}>Link to Download</a>
+//}
+
+
 
 function LandingPage(){
     const onFileUpload = async (event) => {
@@ -15,6 +26,16 @@ function LandingPage(){
             console.log(response);
             event.preventDefault();
         }
+    // Currently cannot choose which file to download, 
+    // Replace http://localhost:3000/ with where your server is running,
+    // Replace testFile.txt with file in your s3
+    const testFileDownload = async (event) => {
+        console.log("Hi from testFileDownload");
+        const response = await fetch("http://localhost:3000/download/testFile.txt");
+        const body = await response.json();
+        console.log(body.downloadUrl);
+        window.location.href = body.downloadUrl;
+    }
 
     return (<>
     <header>
@@ -53,6 +74,7 @@ function LandingPage(){
             <input type="file" name="file" />
         </form>
         <button onClick={onFileUpload}>Send to server!</button>
+        <button onClick={testFileDownload}>Download!</button>
         <p>| nav ends here</p>
     </div>
     </>);
