@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 import "dotenv/config";
@@ -35,4 +35,12 @@ export async function getDownloadUrl(fileName) {
   });
 
   return url;
+}
+export async function getFileList() {
+  const command = new ListObjectsV2Command({
+    Bucket: process.env.S3_BUCKET
+  });
+  const resp = await s3.send(command);
+
+  return resp;
 }
