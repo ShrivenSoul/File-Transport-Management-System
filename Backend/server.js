@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 
-import { uploadToS3, getDownloadUrl  } from "./services/s3.js";
+import { uploadToS3, getDownloadUrl, getFileList } from "./services/s3.js";
 import { scanFile } from "./scanner/scan.js";
 
 const app = express();
@@ -49,6 +49,20 @@ app.get("/download/:filename", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to generate download link" });
+  }
+});
+app.get("/fileList", async (req, res) => {
+
+  try {
+    const resp = await getFileList();
+
+    res.json({
+      fileList: resp
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to generate list of files" });
   }
 });
 

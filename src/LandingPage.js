@@ -1,17 +1,15 @@
-import React from "react";
+import {React} from "react";
 import "./LandingPage.css";
 import { Link } from "react-router-dom";
 
 
-// Ignore for now
-//function LinktoDownload(fileName){
-//    const testFileDownloadUrl = fetch("http://localhost:3000/download/testFile.txt").then((res) => {res.json()}).then((res) => {window.location.href = res.downloadUrl});
-//    console.log(testFileDownloadUrl);
-    
-    //return <a target="_blank" rel="noopener noreferrer" href={testFileDownloadUrl}>Link to Download</a>
-//}
-
-
+function populateFileSelection(arr){
+    arr.forEach(file => {
+        var option = document.createElement("option");
+        option.innerHTML = file;
+        document.getElementById('fileSelection').appendChild(option)
+    });
+}
 
 function LandingPage(){
     const onFileUpload = async (event) => {
@@ -26,15 +24,33 @@ function LandingPage(){
             console.log(response);
             event.preventDefault();
         }
-    // Currently cannot choose which file to download, 
-    // Replace http://localhost:3000/ with where your server is running,
-    // Replace testFile.txt with file in your s3
+    // Replace http://localhost:3000/ with where your server is running
     const testFileDownload = async (event) => {
         console.log("Hi from testFileDownload");
-        const response = await fetch("http://localhost:3000/download/testFile.txt");
+        const response = await fetch(`http://localhost:3000/download/${selectedFile}`);
         const body = await response.json();
         console.log(body.downloadUrl);
         window.location.href = body.downloadUrl;
+    }
+
+
+    let list = [];
+    let selectedFile;
+
+    const getFiles = async () => {
+        const response = await fetch("http://localhost:3000/fileList");
+        const body = await response.json();
+        console.log(body.fileList.Contents);
+        for(let i = 0; i < body.fileList.Contents.length; i++){
+            list.push(body.fileList.Contents[i].Key);
+        }
+        console.log(list);
+        populateFileSelection(list);
+    }
+
+    const getSelectedFile = () => {
+        selectedFile = document.getElementById('fileSelection').options[document.getElementById('fileSelection').selectedIndex].text;
+        console.log(selectedFile);
     }
 
     return (<>
@@ -74,8 +90,12 @@ function LandingPage(){
             <input type="file" name="file" />
         </form>
         <button onClick={onFileUpload}>Send to server!</button>
-        <button onClick={testFileDownload}>Download!</button>
         <p>| nav ends here</p>
+    </div>
+    <div>
+        <button onClick={getFiles}>Get current files</button><div></div>
+        <select id="fileSelection" onChange={getSelectedFile}></select><div></div>
+        <button onClick={testFileDownload}>Download!</button>
     </div>
     </>);
 }
