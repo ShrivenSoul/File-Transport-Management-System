@@ -1,8 +1,12 @@
-import {React} from "react";
+import React from "react";
 import "./LandingPage.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchAuthSession } from "aws-amplify/auth";
 
-
+/**
+ * Populates dropdown with file names
+ * @param {Array} arr - list of file names
+ */
 function populateFileSelection(arr){
     arr.forEach(file => {
         var option = document.createElement("option");
@@ -19,18 +23,26 @@ function LandingPage(){
      * Sends selected file using POST request
      */
     const onFileUpload = async (event) => {
-            console.log("File sent!");
-            const formData = new FormData(document.querySelector("#fileInput"));
-            console.log(formData);
-            // REPLACE LINK HERE WITH WHERE YOUR SERVER IS RUNNING
-            const response = await fetch("http://localhost:3000/upload", {
-                method: "POST",
-                body: formData,
-            }).then((response) => response.json()).then((data) => {console.log(data);});
-            console.log(response);
-            event.preventDefault();
-        }
+        console.log("File sent!");
+        const formData = new FormData(document.querySelector("#fileInput"));
+        console.log(formData);
+
+        // REPLACE LINK HERE WITH WHERE YOUR SERVER IS RUNNING
+        const response = await fetch("http://localhost:3000/upload", {
+            method: "POST",
+            body: formData,
+        })
+        .then((response) => response.json())
+        .then((data) => {console.log(data);});
+
+        console.log(response);
+        event.preventDefault();
+    }
+
     // Replace http://localhost:3000/ with where your server is running
+    /**
+     * Downloads selected file from server
+     */
     const testFileDownload = async (event) => {
         console.log("Hi from testFileDownload");
         const response = await fetch(`http://localhost:3000/download/${selectedFile}`);
@@ -39,24 +51,52 @@ function LandingPage(){
         window.location.href = body.downloadUrl;
     }
 
-
     let list = [];
     let selectedFile;
 
+    /**
+     * Fetches file list from server and populates dropdown
+     */
     const getFiles = async () => {
         const response = await fetch("http://localhost:3000/fileList");
         const body = await response.json();
+
         console.log(body.fileList.Contents);
+
         for(let i = 0; i < body.fileList.Contents.length; i++){
             list.push(body.fileList.Contents[i].Key);
         }
+
         console.log(list);
         populateFileSelection(list);
     }
 
+    /**
+     * Gets currently selected file from dropdown
+     */
     const getSelectedFile = () => {
-        selectedFile = document.getElementById('fileSelection').options[document.getElementById('fileSelection').selectedIndex].text;
+        selectedFile = document.getElementById('fileSelection')
+            .options[document.getElementById('fileSelection').selectedIndex].text;
+
         console.log(selectedFile);
+    }
+
+    const handleAdminClick = async (e) => {
+        e.preventDefault();
+
+        try {
+            const session = await fetchAuthSession();
+            const groups = session.tokens?.idToken?.payload["cognito:groups"] || [];
+
+            if (groups.includes("Admin")) {
+                navigate("/admin");
+            } else {
+                alert("Access denied: Admins only.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error checking admin privileges.");
+        }
     }
 
     return (<>
@@ -65,20 +105,24 @@ function LandingPage(){
         <h1>Cross Domain Solutions</h1>
         </div>
     </header>
+
     <nav>
         <ul>
             <h2>User Name</h2>
         </ul>
+
         <ul>
             <li>
-                 <Link to="/home">
-             <h2>Home</h2>
+                <Link to="/home">
+                    <h2>Home</h2>
                 </Link>
             </li>
         </ul>
-         <ul>
+
+        <ul>
             <h2>Upload Files</h2>
         </ul>
+
         <ul>
             <li>
                 <Link to="/admin" onClick={handleAdminClick}>
@@ -86,14 +130,16 @@ function LandingPage(){
                 </Link>
             </li>
         </ul>
+
         <ul>
             <li>
-                 <Link to="/CDS-capstone">
-             <h2>Sign Out</h2>
+                <Link to="/CDS-capstone">
+                    <h2>Sign Out</h2>
                 </Link>
             </li>
         </ul>
     </nav>
+
     <div>
         <h3>Upload file here: </h3>
         <form encType="multipart/form-data" method="post" name="fileInput" id="fileInput">
@@ -102,9 +148,14 @@ function LandingPage(){
         <button onClick={onFileUpload}>Send to server!</button>
         <p>| nav ends here</p>
     </div>
+
     <div>
-        <button onClick={getFiles}>Get current files</button><div></div>
-        <select id="fileSelection" onChange={getSelectedFile}></select><div></div>
+        <button onClick={getFiles}>Get current files</button>
+        <div></div>
+
+        <select id="fileSelection" onChange={getSelectedFile}></select>
+        <div></div>
+
         <button onClick={testFileDownload}>Download!</button>
     </div>
     </>);
