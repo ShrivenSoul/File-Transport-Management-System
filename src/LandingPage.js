@@ -5,13 +5,17 @@ import { fetchAuthSession } from "aws-amplify/auth";
 
 /**
  * Populates dropdown with file names
- * @param {Array} arr - list of file names
+ * @param {Set} arr - list of file names
  */
 function populateFileSelection(arr){
+    let selectTag = document.getElementById('fileSelection');
+    while (selectTag.firstChild){
+        selectTag.removeChild(selectTag.lastChild);
+    }
     arr.forEach(file => {
         var option = document.createElement("option");
         option.innerHTML = file;
-        document.getElementById('fileSelection').appendChild(option)
+        selectTag.appendChild(option)
     });
 }
 
@@ -51,7 +55,7 @@ function LandingPage(){
         window.location.href = body.downloadUrl;
     }
 
-    let list = [];
+    let fileSet = new Set();
     let selectedFile;
 
     /**
@@ -64,11 +68,11 @@ function LandingPage(){
         console.log(body.fileList.Contents);
 
         for(let i = 0; i < body.fileList.Contents.length; i++){
-            list.push(body.fileList.Contents[i].Key);
+            fileSet.add(body.fileList.Contents[i].Key);
         }
 
-        console.log(list);
-        populateFileSelection(list);
+        console.log(fileSet);
+        populateFileSelection(fileSet);
     }
 
     /**
