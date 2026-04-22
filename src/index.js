@@ -4,15 +4,22 @@ import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import './index.css';
 import App from './App';
 import LandingPage from './LandingPage';
+import AdminPage from "./AdminPage";
 import reportWebVitals from './reportWebVitals';
+
+import { Amplify } from "aws-amplify";
+import awsConfig from "./aws-config";
+
+Amplify.configure(awsConfig);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Router>
       <Routes>
-        <Route path="/CDS-capstone" element={<App/>}/>
+        <Route path="/" element={<App/>}/>
         <Route path="/home" element={<LandingPage/>}/>
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </Router>
   </React.StrictMode>
