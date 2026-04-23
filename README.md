@@ -61,7 +61,7 @@ npm install
 npm start
 ```
 
-## 🌐 Running the Application
+## Running the Application
 
 After starting the project:
 
@@ -75,6 +75,4 @@ http://localhost:3000
 ---
 
 ## Current Release Notes
-
-
-🚧 Currently in development
+To be added
