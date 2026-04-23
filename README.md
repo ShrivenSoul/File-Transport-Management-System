@@ -1,4 +1,4 @@
-# 📁 File Transport Management System
+# File Transport Management System
 
 A web-based file transport management application built with **React.js** and **Node.js**.
 
