@@ -4,7 +4,7 @@ A web-based file transport management application built with **React.js** and **
 
 ---
 
-## ⚙️ Requirements
+## Requirements
 
 Before running the project, make sure you have the following installed:
 
