@@ -81,6 +81,10 @@ function LandingPage(){
         console.log(selectedFile);
     }
 
+    /**
+     * Checks if a user has the credentials on access the Admin page
+     * @param {*} e 
+     */
     const handleAdminClick = async (e) => {
         e.preventDefault();
 
@@ -88,6 +92,8 @@ function LandingPage(){
             const session = await fetchAuthSession();
             const groups = session.tokens?.idToken?.payload["cognito:groups"] || [];
 
+            console.log(session.tokens.idToken.payload);
+            
             if (groups.includes("Admin")) {
                 navigate("/admin");
             } else {
@@ -133,7 +139,7 @@ function LandingPage(){
 
         <ul>
             <li>
-                <Link to="/CDS-capstone">
+                <Link to="/">
                     <h2>Sign Out</h2>
                 </Link>
             </li>

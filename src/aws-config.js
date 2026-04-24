@@ -7,6 +7,7 @@ const awsConfig = {
     Cognito: {
       userPoolId: "us-east-2_2hwRL848d",
       userPoolClientId: "no4bg4lims05c9t2vj70nfruo",
+      region: "us-east-2"
     },
   },
 };

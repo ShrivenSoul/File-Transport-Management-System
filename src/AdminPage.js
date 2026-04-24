@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./LandingPage.css";
 
@@ -10,19 +10,46 @@ function AdminPage() {
    * Fetches user information (Lambda -> Gateway -> AWS Cognito)
    */
   const fetchUsers = async () => {
-  try {
-    const res = await fetch(
-      "https://3hy0y4wo81.execute-api.us-east-2.amazonaws.com/users"
+    try {
+      const res = await fetch(
+        "https://3hy0y4wo81.execute-api.us-east-2.amazonaws.com/users"
+      );
+
+      const data = await res.json();
+
+      setUsers(data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch users");
+    }
+  };
+
+  /**
+   * Handles user deletion (frontend test version)
+   * Currently only logs selected user
+   */
+    const handleDeleteUser = async (email) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${email}? This action cannot be undone.`
     );
 
-    const data = await res.json();
+    if (!confirmDelete) {
+      console.log("Delete cancelled for:", email);
+      return;
+    }
 
-    setUsers(data);
-  } catch (err) {
-    console.error(err);
-    setError("Failed to fetch users");
-  }
-};
+    console.log("Delete confirmed for:", email);
+
+    // Temporary frontend removal for testing UI
+    setUsers(users.filter((user) => user.email !== email));
+    };
+
+  /**
+   * Automatically loads users when page first opens
+   */
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   return (
     <>
@@ -59,7 +86,7 @@ function AdminPage() {
 
         <ul>
           <li>
-            <Link to="/CDS-capstone">
+            <Link to="/">
               <h2>Sign Out</h2>
             </Link>
           </li>
@@ -70,15 +97,35 @@ function AdminPage() {
         <h1>Admin Dashboard</h1>
 
         <button onClick={fetchUsers} style={{ marginBottom: "20px" }}>
-          Load Users
+          Refresh
         </button>
 
         {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <ul>
+        <ul style={{ width: "500px" }}>
           {users.map((user, index) => (
-            <li key={index}>
-              {user.email}
+            <li
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "10px",
+                borderBottom: "1px solid lightgray",
+                paddingBottom: "8px"
+              }}
+            >
+              <span>{user.email}</span>
+
+              <button
+                onClick={() => handleDeleteUser(user.email)}
+                style={{
+                  padding: "5px 10px",
+                  cursor: "pointer"
+                }}
+              >
+                X Delete User
+              </button>
             </li>
           ))}
         </ul>
