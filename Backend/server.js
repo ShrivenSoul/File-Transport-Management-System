@@ -72,7 +72,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       action: "UPLOAD_FILE",
       target: fileName || "",
       result: "error",
-      details: error.message,
+      details: err.message,
       ipAddress: req.ip,
     });
     

@@ -19,6 +19,22 @@ function populateFileSelection(arr){
     });
 }
 
+function bytesToFileSize(bytes){
+    let byteMagnitude = ['KB', 'MB', 'GB'];
+    let i = 0;
+    if (Math.abs(bytes) < 1024){
+        return bytes + ' B';
+    }
+    do {
+        bytes /= 1024;
+        ++i;
+    } while (Math.round(Math.abs(bytes)*100)/100 >= 1024 && i < byteMagnitude.length -1);
+
+    return bytes.toFixed(2) + ' ' + byteMagnitude[i];
+}
+
+
+
 function LandingPage(){
     const navigate = useNavigate();
 
@@ -36,7 +52,6 @@ function LandingPage(){
             method: "POST",
             body: formData,
         })
-        .then((response) => response.json())
         .then((data) => {console.log(data);});
 
         console.log(response);
@@ -68,7 +83,7 @@ function LandingPage(){
         console.log(body.fileList.Contents);
 
         for(let i = 0; i < body.fileList.Contents.length; i++){
-            fileSet.add(body.fileList.Contents[i].Key);
+            fileSet.add(body.fileList.Contents[i].Key + '  |  ' + bytesToFileSize(body.fileList.Contents[i].Size));
         }
 
         console.log(fileSet);
@@ -79,8 +94,9 @@ function LandingPage(){
      * Gets currently selected file from dropdown
      */
     const getSelectedFile = () => {
-        selectedFile = document.getElementById('fileSelection')
-            .options[document.getElementById('fileSelection').selectedIndex].text;
+        let unparsedSelectedFile = document.getElementById('fileSelection')
+            .options[document.getElementById('fileSelection').selectedIndex].text.split(" ");
+        selectedFile = unparsedSelectedFile[0];
 
         console.log(selectedFile);
     }

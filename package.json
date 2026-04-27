@@ -6,12 +6,10 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^6.15.2",
     "@aws-sdk/client-cognito-identity-provider": "^3.1030.0",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
     "aws-amplify": "^6.16.3",
     "axios": "^1.14.0",
+    "babel-core": "^6.26.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-scripts": "5.0.1",
@@ -44,7 +42,30 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
+    "@babel/preset-react": "^7.28.5",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "babel-jest": "^30.3.0",
+    "babel-plugin-styled-components": "^2.1.4",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
     "gh-pages": "^6.3.0",
+    "jest": "^27.5.1",
+    "jest-config": "^30.3.0",
     "react-router-dom": "^7.13.1"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/"
+    },
+    "transform": {
+      "\\.js$": "<rootDir>/node_modules/babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!(@aws-sdk/client-s3))",
+      "node_modules/(?!@toolz/allow-react)/"
+    ]
   }
 }
