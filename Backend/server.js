@@ -9,8 +9,14 @@ import { uploadToS3, getDownloadUrl, getFileList  } from "./services/s3.js";
 import { scanFile } from "./scanner/scan.js";
 
 const app = express();
-const upload = multer({ dest: "uploads/" });
+const FILE_MAX = 5 * 1024 * 1024 * 1024; 
 
+const upload = multer({
+  dest: "uploads/",
+  limits: {
+    fileSize: FILE_MAX,
+  },
+});
 
 app.post("/upload", upload.single("file"), async (req, res) => {
   const filePath = req.file.path;
@@ -43,7 +49,6 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     const url = await uploadToS3(filePath, fileName);
-    
     await writeAuditLog({
       userId: currentUser.userId,
       username: currentUser.username,
@@ -54,13 +59,16 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       details: "Uploaded to S3 successfully",
       ipAddress: req.ip,
     });
+   
 
     fs.unlinkSync(filePath);
 
-    res.json({
+    return res.json({
       message: "Upload successful",
       fileUrl: url,
     });
+
+     
 
   } catch (err) {
     console.error(err);
@@ -146,6 +154,38 @@ app.get("/fileList", async (req, res) => {
   }
 });
 
+app.use(async (err, req, res, next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+
+     const currentUser = {
+    userId: "123",
+    username: "bob",
+    userGroups: ["Level1"],
+    };
+
+    try {
+      await writeAuditLog({
+        userId: currentUser.userId,
+        username: currentUser.username,
+        userGroups: currentUser.userGroups,
+        action: "UPLOAD_FILE",
+        target: "unknown", //File may not exist at this level since upload would be blocked
+        result: "failed",
+        details: "File exceeded maximum upload size of 5GB",
+        ipAddress: req.ip,
+      });
+    } catch (logError) {
+      console.error("Audit log failed:", logError);
+    }
+
+    return res.status(413).json({
+      error: "File too large",
+      message: "Maximum upload size is 5GB.",
+    });
+  }
+
+  next(err);
+});
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
