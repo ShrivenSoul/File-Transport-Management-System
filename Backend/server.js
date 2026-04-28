@@ -2,8 +2,10 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 
+
 import { writeAuditLog, getAuditLogs } from "./services/audit.js";
-import { uploadToS3, getDownloadUrl  } from "./services/s3.js";
+import { uploadToS3, getDownloadUrl, getFileList  } from "./services/s3.js";
+
 import { scanFile } from "./scanner/scan.js";
 
 const app = express();
@@ -135,6 +137,20 @@ app.get("/download/:filename", async (req, res) => {
       details: "Failed download from S3 Bucket!",
       ipAddress: req.ip,
     });
+  }
+});
+app.get("/fileList", async (req, res) => {
+
+  try {
+    const resp = await getFileList();
+
+    res.json({
+      fileList: resp
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to generate list of files" });
   }
 });
 
