@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { fetchAuthSession } from "aws-amplify/auth";
 import "./LandingPage.css";
 
 function AdminPage() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
+  const [currentUserEmail, setCurrentUserEmail] = useState("");
 
   /**
    * Fetches user information (Lambda -> Gateway -> AWS Cognito)
@@ -25,10 +27,9 @@ function AdminPage() {
   };
 
   /**
-   * Handles user deletion (frontend test version)
-   * Currently only logs selected user
+   * Handles user deletion
    */
-    const handleDeleteUser = async (email) => {
+  const handleDeleteUser = async (username, email) => {
     const confirmDelete = window.confirm(
       `Are you sure you want to delete ${email}? This action cannot be undone.`
     );
@@ -40,15 +41,55 @@ function AdminPage() {
 
     console.log("Delete confirmed for:", email);
 
-    // Temporary frontend removal for testing UI
-    setUsers(users.filter((user) => user.email !== email));
-    };
+    try {
+      const res = await fetch(
+        "https://3hy0y4wo81.execute-api.us-east-2.amazonaws.com/deleteuser",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username })
+        }
+      );
+
+      const data = await res.json();
+      console.log(data);
+
+      if (res.ok) {
+        alert("User deleted successfully.");
+        fetchUsers();
+      } else {
+        alert(data.message || "Failed to delete user.");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting user.");
+    }
+  };
 
   /**
    * Automatically loads users when page first opens
    */
   useEffect(() => {
     fetchUsers();
+
+    const fetchCurrentUser = async () => {
+      try {
+        const session = await fetchAuthSession();
+
+        const email = session?.tokens?.idToken?.payload?.email;
+
+        console.log("Current logged in email:", email);
+
+        setCurrentUserEmail(email);
+      } catch (err) {
+        console.error("Failed to get current user email:", err);
+      }
+    };
+
+    fetchCurrentUser();
   }, []);
 
   return (
@@ -102,33 +143,49 @@ function AdminPage() {
 
         {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <ul style={{ width: "500px" }}>
-          {users.map((user, index) => (
-            <li
-              key={index}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "10px",
-                borderBottom: "1px solid lightgray",
-                paddingBottom: "8px"
-              }}
-            >
-              <span>{user.email}</span>
-
-              <button
-                onClick={() => handleDeleteUser(user.email)}
+        {/* Scrollable user list container */}
+        <div
+          style={{
+            width: "500px",
+            height: "400px",
+            border: "1px solid lightgray",
+            overflowY: "auto",
+            padding: "10px",
+            backgroundColor: "#fff"
+          }}
+        >
+          <ul style={{ margin: 0, padding: 0 }}>
+            {users.map((user, index) => (
+              <li
+                key={index}
                 style={{
-                  padding: "5px 10px",
-                  cursor: "pointer"
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                  borderBottom: "1px solid lightgray",
+                  paddingBottom: "8px"
                 }}
               >
-                X Delete User
-              </button>
-            </li>
-          ))}
-        </ul>
+                <span>{user.email}</span>
+
+                {user.email !== currentUserEmail && (
+                  <button
+                    onClick={() =>
+                      handleDeleteUser(user.username, user.email)
+                    }
+                    style={{
+                      padding: "5px 10px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    X Delete User
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </>
   );
