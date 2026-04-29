@@ -25,7 +25,7 @@ npm -v
 
 ClamAV installation/setup:
 
-1.To download ClamAV you ened to go to their website and select what OS your PC has and grab the zip folder
+1. To download ClamAV you ened to go to their website and select what OS your PC has and grab the zip folder
 2. Extract the folder anywhere and open it
 3. In the folder will be another folder named conf_examples
 4. There should be 2 files that have the .example tags open both in an editor
