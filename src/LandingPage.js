@@ -1,6 +1,6 @@
 import React from "react";
 import "./LandingPage.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { fetchAuthSession } from "aws-amplify/auth";
 
 /**

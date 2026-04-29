@@ -54,11 +54,12 @@
     "gh-pages": "^6.3.0",
     "jest": "^27.5.1",
     "jest-config": "^30.3.0",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.1",
+    "util": "^0.12.5"
   },
   "jest": {
     "moduleNameMapper": {
-      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/"
+      "^react-router$": "<rootDir>/node_modules/react-router/"
     },
     "transform": {
       "\\.js$": "<rootDir>/node_modules/babel-jest"
