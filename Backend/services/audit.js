@@ -11,7 +11,11 @@ const dynamo = new DynamoDBClient({
 });
 
 const TABLE_NAME = process.env.AUDIT_TABLE || "AuditLogs";
-
+/**
+ * 
+ * @param {*} param0 
+ * This gives the program permissions to write audit logs and how the audit log is formatted
+ */
 export async function writeAuditLog({
   userId = "unknown",
   username = "unknown",
@@ -40,7 +44,11 @@ export async function writeAuditLog({
 
   await dynamo.send(command);
 }
-
+/**
+ * 
+ * @param {*} limit of how many logs are shown
+ * @returns all logs from up to 50 of the recent logs
+ */
 export async function getAuditLogs(limit = 50) {
   const command = new ScanCommand({
     TableName: TABLE_NAME,
