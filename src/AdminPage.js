@@ -5,6 +5,7 @@ import "./LandingPage.css";
 
 function AdminPage() {
   const [users, setUsers] = useState([]);
+  const [auditLogs, setAuditLogs] = useState([]);
   const [error, setError] = useState("");
   const [currentUserEmail, setCurrentUserEmail] = useState("");
 
@@ -43,57 +44,46 @@ function AdminPage() {
 
     console.log("Delete confirmed for:", email);
 
-    try {
-      const res = await fetch(
-        "https://3hy0y4wo81.execute-api.us-east-2.amazonaws.com/deleteuser",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ username })
-        }
-      );
+    setUsers(data);
+  } catch (err) {
+    console.error(err);
+    setError("Failed to fetch users");
+  }
+};
+/**
+ * This fetches the audit logs from the backend using the user's authenticated session
+ * @returns audit logs
+ */
+const fetchAuditLogs = async () => {
+  try {
+    setError("");
 
-      const data = await res.json();
-      console.log(data);
+    
+    const session = await fetchAuthSession();
+    const token = session.tokens?.accessToken?.toString();
 
-      if (res.ok) {
-        alert("User deleted successfully.");
-        fetchUsers();
-      } else {
-        alert(data.message || "Failed to delete user.");
-      }
+    
+    const res = await fetch("http://localhost:3000/admin/audit-logs", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    } catch (err) {
-      console.error(err);
-      alert("Error deleting user.");
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || "Failed to fetch audit logs");
+      return;
     }
-  };
 
-  /**
-   * Automatically loads user list when page first opens
-   * Grabs the current user and removes the ability to delete that user (a user can't delete themself)
-   */
-  useEffect(() => {
-    fetchUsers();
+    setAuditLogs(data);
 
-    const fetchCurrentUser = async () => {
-      try {
-        const session = await fetchAuthSession();
-
-        const email = session?.tokens?.idToken?.payload?.email;
-
-        console.log("Current logged in email:", email);
-
-        setCurrentUserEmail(email);
-      } catch (err) {
-        console.error("Failed to get current user email:", err);
-      }
-    };
-
-    fetchCurrentUser();
-  }, []);
+  } catch (err) {
+    console.error(err);
+    setError("Failed to fetch audit logs");
+  }
+};
 
   return (
     <>
@@ -144,50 +134,50 @@ function AdminPage() {
           Refresh
         </button>
 
+        <button onClick={fetchAuditLogs} style={{ marginLeft: "10px", marginBottom: "20px" }}>
+          Load Audit Logs
+        </button>
+
         {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <div
-          style={{
-            width: "500px",
-            height: "400px",
-            border: "1px solid lightgray",
-            overflowY: "auto",
-            padding: "10px",
-            backgroundColor: "#fff"
-          }}
-        >
-          <ul style={{ margin: 0, padding: 0 }}>
-            {users.map((user, index) => (
-              <li
-                key={index}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "10px",
-                  borderBottom: "1px solid lightgray",
-                  paddingBottom: "8px"
-                }}
-              >
-                <span>{user.email}</span>
+        <ul>
+          {users.map((user, index) => (
+            <li key={index}>
+              {user.email}
+            </li>
+          ))}
+        </ul>
+         <h2>Audit Logs</h2>
 
-                {user.email !== currentUserEmail && (
-                  <button
-                    onClick={() =>
-                      handleDeleteUser(user.username, user.email)
-                    }
-                    style={{
-                      padding: "5px 10px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    X Delete User
-                  </button>
-                )}
-              </li>
+        <table border="1" cellPadding="8" style={{ width: "100%", background: "white" }}>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Username</th>
+              <th>Groups</th>
+              <th>Action</th>
+              <th>Target</th>
+              <th>Result</th>
+              <th>Details</th>
+              <th>IP Address</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {auditLogs.map((log) => (
+              <tr key={log.logId}>
+                <td>{log.timestamp}</td>
+                <td>{log.username}</td>
+                <td>{Array.isArray(log.userGroups) ? log.userGroups.join(", ") : log.userGroups}</td>
+                <td>{log.action}</td>
+                <td>{log.target}</td>
+                <td>{log.result}</td>
+                <td>{log.details}</td>
+                <td>{log.ipAddress}</td>
+              </tr>
             ))}
-          </ul>
-        </div>
+          </tbody>
+        </table>
       </div>
     </>
   );

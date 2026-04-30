@@ -3,7 +3,6 @@ import multer from "multer";
 import fs from "fs";
 import cors from "cors";
 
-
 import { writeAuditLog, getAuditLogs } from "./services/audit.js";
 import { uploadToS3, getDownloadUrl, getFileList  } from "./services/s3.js";
 
@@ -13,7 +12,7 @@ import { verifyToken } from "./BackendToken.js";
 
 
 const app = express();
-app.use(cors());
+
 const FILE_MAX = 5 * 1024 * 1024 * 1024; 
 
 const upload = multer({
@@ -112,6 +111,10 @@ app.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
  */
 app.get("/admin/audit-logs", verifyToken, async (req, res) =>  {
   try {
+    if (!req.user.groups.includes("Admin")) {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
     const logs = await getAuditLogs(100);
     res.json(logs);
   } catch (error) {
@@ -194,11 +197,7 @@ app.get("/fileList", verifyToken, async (req, res) =>  {
 app.use(async (err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
 
-     const currentUser = {
-    userId: "123",
-    username: "bob",
-    userGroups: ["Level1"],
-    };
+     const currentUser = req.user;
 
     try {
       await writeAuditLog({
