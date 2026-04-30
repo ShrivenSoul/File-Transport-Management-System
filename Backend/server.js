@@ -2,13 +2,13 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 
-
 import { writeAuditLog, getAuditLogs } from "./services/audit.js";
 import { uploadToS3, getDownloadUrl, getFileList  } from "./services/s3.js";
 
 import { scanFile } from "./scanner/scan.js";
 
 const app = express();
+
 const FILE_MAX = 5 * 1024 * 1024 * 1024; 
 
 const upload = multer({
@@ -29,11 +29,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   const fileName = req.file.originalname;
 
   //Test User
-  const currentUser = {
-    userId: "123",
-    username: "bob",
-    userGroups: ["Level1"],
-  };
+  const currentUser = req.user;
 
 
   try {
@@ -99,8 +95,12 @@ app.post("/upload", upload.single("file"), async (req, res) => {
  * If the user is an Admin they can see the logs.
  * If the logs get corrupted they will return an error
  */
-app.get("/admin/audit-logs", async (req, res) => {
+app.get("/admin/audit-logs",  async (req, res) => {
   try {
+    if (!req.user.groups.includes("Admin")) {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
     const logs = await getAuditLogs(100);
     res.json(logs);
   } catch (error) {
@@ -117,11 +117,7 @@ app.get("/admin/audit-logs", async (req, res) => {
 app.get("/download/:filename", async (req, res) => {
   const fileName = req.params.filename;
 
-  const currentUser = {
-    userId: "123",
-    username: "bob",
-    userGroups: ["Level1"],
-  };
+  const currentUser = req.user;
 
   try {
     const url = await getDownloadUrl(fileName);
@@ -181,11 +177,7 @@ app.get("/fileList", async (req, res) => {
 app.use(async (err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
 
-     const currentUser = {
-    userId: "123",
-    username: "bob",
-    userGroups: ["Level1"],
-    };
+     const currentUser = req.user;
 
     try {
       await writeAuditLog({

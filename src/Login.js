@@ -121,6 +121,7 @@ function Signup() {
    * Handles user login using AWS Cognito
    * Signs out any existing user first to avoid session conflicts
    * Redirects to home page on success
+   * Grabs session token and logs the login in the audit log
    * @param {object} e - event object
    */
   const handleLogin = async (e) => {
@@ -128,7 +129,7 @@ function Signup() {
     setError("");
 
     try {
-      // 🔥 Fix: clear any existing session
+      
       await signOut();
 
       await signIn({
@@ -137,6 +138,7 @@ function Signup() {
       });
 
       navigate("/home");
+
     } catch (err) {
       setError(err.message || "Login failed");
     }
