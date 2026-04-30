@@ -18,7 +18,16 @@ const upload = multer({
   },
 });
 
+<<<<<<< HEAD
 
+=======
+/**
+ * Sends a file to the scanner if it comes back clean it will give the upload to S3
+ * If the file is clean it sends an audit log to DB and the file goes to the S3 bucket
+ * If the file is not clean it is rejected and an audit log is sent to the DynamoDB table
+ * If there is a hitch it will provide an error
+ */
+>>>>>>> 60a12eb88ad617c46c9231a1a6e9855d6fa7f608
 app.post("/upload", upload.single("file"), async (req, res) => {
   const filePath = req.file.path;
   const fileName = req.file.originalname;
@@ -89,6 +98,11 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
+
+/**
+ * If the user is an Admin they can see the logs.
+ * If the logs get corrupted they will return an error
+ */
 app.get("/admin/audit-logs", async (req, res) => {
   try {
     const logs = await getAuditLogs(100);
@@ -99,6 +113,11 @@ app.get("/admin/audit-logs", async (req, res) => {
   }
 });
 
+/**
+ * This downloads the file that the user wants
+ * Audit logs the download request
+ * Sends url in command line for download
+ */
 app.get("/download/:filename", async (req, res) => {
   const fileName = req.params.filename;
 
@@ -140,6 +159,10 @@ app.get("/download/:filename", async (req, res) => {
     });
   }
 });
+
+/**
+ * This gets the file list to be displayed in the app
+ */
 app.get("/fileList", async (req, res) => {
 
   try {
@@ -155,6 +178,10 @@ app.get("/fileList", async (req, res) => {
   }
 });
 
+/**
+ * This limits file size to a predetermined size of 5GB
+ * Also logs file sizes that are > 5GB
+ */
 app.use(async (err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
 
