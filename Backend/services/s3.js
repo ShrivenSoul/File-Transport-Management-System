@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 import "dotenv/config";
@@ -11,7 +11,12 @@ const s3 = new S3Client({
   },
 });
 
-
+/**
+ * A function to send a file from local to the AWS S3 Server
+ * @param {*} filePath Path of the file
+ * @param {*} fileName Name of the file
+ * @returns a string denoting whether or not the upload to S3 is successful or not
+ */
 export async function uploadToS3(filePath, fileName) {
   const fileStream = fs.createReadStream(filePath);
 
@@ -25,6 +30,12 @@ export async function uploadToS3(filePath, fileName) {
 
   return `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${fileName}`;
 }
+
+/**
+ * Sends a link to download a given file by name
+ * @param {*} fileName 
+ * @returns URL for the file download
+ */
 export async function getDownloadUrl(fileName) {
   const command = new GetObjectCommand({
     Bucket: process.env.S3_BUCKET,
@@ -35,4 +46,17 @@ export async function getDownloadUrl(fileName) {
   });
 
   return url;
+}
+
+/**
+ * Gives the list of files
+ * @returns List of Files
+ */
+export async function getFileList() {
+  const command = new ListObjectsV2Command({
+    Bucket: process.env.S3_BUCKET
+  });
+  const resp = await s3.send(command);
+
+  return resp;
 }

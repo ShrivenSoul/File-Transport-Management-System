@@ -128,7 +128,6 @@ function Signup() {
     setError("");
 
     try {
-      // 🔥 Fix: clear any existing session
       await signOut();
 
       await signIn({
