@@ -1,0 +1,99 @@
+#Lambda function for DeleteUser
+#Deletion is based on username NOT email. 
+import {
+  CognitoIdentityProviderClient,
+  AdminDeleteUserCommand
+} from "@aws-sdk/client-cognito-identity-provider";
+
+const client = new CognitoIdentityProviderClient({
+  region: "us-east-2"
+});
+
+export const handler = async (event) => {
+  try {
+    console.log("Full event:", JSON.stringify(event));
+
+    // Parse request body from API Gateway
+    const body = JSON.parse(event.body);
+
+    const username = body.username;
+
+    console.log("Username received:", username);
+
+    if (!username) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "Username is required"
+        })
+      };
+    }
+
+    const command = new AdminDeleteUserCommand({
+      UserPoolId: "us-east-2_2hwRL848d",
+      Username: username
+    });
+
+    await client.send(command);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "User deleted successfully"
+      })
+    };
+
+  } catch (err) {
+    console.error("Delete error:", err);
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "Failed to delete user"
+      })
+    };
+  }
+};
+
+
+#Lambda function for listUsers
+#Uses sdk library. folders have been imported into AWS Lambda to use the library.
+import {
+  CognitoIdentityProviderClient,
+  ListUsersCommand
+} from "@aws-sdk/client-cognito-identity-provider";
+
+const client = new CognitoIdentityProviderClient({
+  region: "us-east-2",
+});
+
+export const handler = async (event) => {
+  try {
+    const command = new ListUsersCommand({
+      UserPoolId: "us-east-2_2hwRL848d",
+    });
+
+    const result = await client.send(command);
+
+    const users = result.Users.map(user => {
+      const emailAttr = user.Attributes.find(attr => attr.Name === "email");
+
+      return {
+        username: user.Username,
+        email: emailAttr ? emailAttr.Value : "No email",
+      };
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(users),
+    };
+  } catch (err) {
+    console.error("ERROR:", err);
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message }),
+    };
+  }
+};
