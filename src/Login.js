@@ -6,7 +6,8 @@ import {
   signIn,
   signOut,
   resetPassword,
-  confirmResetPassword
+  confirmResetPassword,
+  fetchAuthSession
 } from "aws-amplify/auth";
 
 function Signup() {
@@ -124,22 +125,28 @@ function Signup() {
    * @param {object} e - event object
    */
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    try {
-      await signOut();
+  try {
+    await signOut();
 
-      await signIn({
-        username: formData.email,
-        password: formData.password,
-      });
+    const signInResult = await signIn({
+      username: formData.email,
+      password: formData.password,
+    });
 
-      navigate("/home");
-    } catch (err) {
-      setError(err.message || "Login failed");
-    }
-  };
+    console.log("SignIn result:", signInResult); 
+
+    const session = await fetchAuthSession();
+    console.log("Session after login:", session); 
+
+    navigate("/home");
+  } catch (err) {
+    console.log("Login error:", err);
+    setError(err.message || "Login failed");
+  }
+};
 
   /**
    * Sends password reset code to user's email
