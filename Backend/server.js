@@ -136,7 +136,7 @@ app.get("/download/:filename", verifyToken, async (req, res) =>  {
 
     res.json({
       downloadUrl: url
-    });
+     });
     await writeAuditLog({
       userId: currentUser.userId,
       username: currentUser.username,
