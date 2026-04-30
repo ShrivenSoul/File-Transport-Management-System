@@ -1,11 +1,15 @@
 import express from "express";
 import multer from "multer";
 import fs from "fs";
+import cors from "cors";
 
 import { writeAuditLog, getAuditLogs } from "./services/audit.js";
 import { uploadToS3, getDownloadUrl, getFileList  } from "./services/s3.js";
 
 import { scanFile } from "./scanner/scan.js";
+import { verifyToken } from "./BackendToken.js";
+
+
 
 const app = express();
 
@@ -18,18 +22,28 @@ const upload = multer({
   },
 });
 
+
+
+
 /**
  * Sends a file to the scanner if it comes back clean it will give the upload to S3
  * If the file is clean it sends an audit log to DB and the file goes to the S3 bucket
  * If the file is not clean it is rejected and an audit log is sent to the DynamoDB table
  * If there is a hitch it will provide an error
  */
-app.post("/upload", upload.single("file"), async (req, res) => {
+
+app.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
+
   const filePath = req.file.path;
   const fileName = req.file.originalname;
-
-  //Test User
   const currentUser = req.user;
+  //Test User
+  /** 
+  const currentUser = {
+    userId: "123",
+    username: "bob",
+    userGroups: ["Level1"],
+  };*/
 
 
   try {
@@ -82,7 +96,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       action: "UPLOAD_FILE",
       target: fileName || "",
       result: "error",
-      details: error.message,
+      details: err.message,
       ipAddress: req.ip,
     });
     
@@ -95,7 +109,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
  * If the user is an Admin they can see the logs.
  * If the logs get corrupted they will return an error
  */
-app.get("/admin/audit-logs",  async (req, res) => {
+app.get("/admin/audit-logs", verifyToken, async (req, res) =>  {
   try {
     if (!req.user.groups.includes("Admin")) {
       return res.status(403).json({ error: "Access denied" });
@@ -114,17 +128,23 @@ app.get("/admin/audit-logs",  async (req, res) => {
  * Audit logs the download request
  * Sends url in command line for download
  */
-app.get("/download/:filename", async (req, res) => {
+app.get("/download/:filename", verifyToken, async (req, res) =>  {
   const fileName = req.params.filename;
-
-  const currentUser = req.user;
+  const currentUser = req.user; 
+  //** 
+ // const currentUser = {
+   /// userId: "123",
+ //   username: "bob",
+   // userGroups: ["Level1"],
+ // };
+  //* */ 
 
   try {
     const url = await getDownloadUrl(fileName);
 
     res.json({
       downloadUrl: url
-    });
+     });
     await writeAuditLog({
       userId: currentUser.userId,
       username: currentUser.username,
@@ -155,7 +175,7 @@ app.get("/download/:filename", async (req, res) => {
 /**
  * This gets the file list to be displayed in the app
  */
-app.get("/fileList", async (req, res) => {
+app.get("/fileList", verifyToken, async (req, res) =>  {
 
   try {
     const resp = await getFileList();
@@ -202,6 +222,6 @@ app.use(async (err, req, res, next) => {
 
   next(err);
 });
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+app.listen(5000, () => {
+  console.log("Server running on http://localhost:5000");
 });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
 import "./LandingPage.css";
@@ -7,17 +7,42 @@ function AdminPage() {
   const [users, setUsers] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
   const [error, setError] = useState("");
+  const [currentUserEmail, setCurrentUserEmail] = useState("");
 
   /**
    * Fetches user information (Lambda -> Gateway -> AWS Cognito)
    */
   const fetchUsers = async () => {
-  try {
-    const res = await fetch(
-      "https://3hy0y4wo81.execute-api.us-east-2.amazonaws.com/users"
+    try {
+      const res = await fetch(
+        "https://3hy0y4wo81.execute-api.us-east-2.amazonaws.com/users"
+      );
+
+      const data = await res.json();
+
+      setUsers(data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch users");
+    }
+  };
+
+  /**
+   * Handles user deletion
+   * A confirmation box appears to make sure they want to delete the specific user
+   * Deletes based on username and not the email of the user
+   */
+  const handleDeleteUser = async (username, email) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${email}? This action cannot be undone.`
     );
 
-    const data = await res.json();
+    if (!confirmDelete) {
+      console.log("Delete cancelled for:", email);
+      return;
+    }
+
+    console.log("Delete confirmed for:", email);
 
     setUsers(data);
   } catch (err) {
@@ -95,7 +120,7 @@ const fetchAuditLogs = async () => {
 
         <ul>
           <li>
-            <Link to="/CDS-capstone">
+            <Link to="/">
               <h2>Sign Out</h2>
             </Link>
           </li>
@@ -106,7 +131,7 @@ const fetchAuditLogs = async () => {
         <h1>Admin Dashboard</h1>
 
         <button onClick={fetchUsers} style={{ marginBottom: "20px" }}>
-          Load Users
+          Refresh
         </button>
 
         <button onClick={fetchAuditLogs} style={{ marginLeft: "10px", marginBottom: "20px" }}>
