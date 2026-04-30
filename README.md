@@ -90,4 +90,6 @@ http://localhost:3000
 ---
 
 ## Current Release Notes
-To be added
+Admin account information:
+email - unknownmage97@gmail.com
+password - CD$Capstone1
