@@ -91,5 +91,5 @@ http://localhost:3000
 
 ## Current Release Notes
 Admin account information:
-email - unknownmage97@gmail.com
-password - CD$Capstone1
+- email - unknownmage97@gmail.com
+- password - CD$Capstone1
