@@ -1,7 +1,8 @@
 import React from "react";
 import "./LandingPage.css";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchAuthSession } from "aws-amplify/auth";
+import { fetchAuthSession, signOut } from "aws-amplify/auth";
+
 
 /**
  * Populates dropdown with file names
@@ -15,6 +16,9 @@ function populateFileSelection(arr){
     });
 }
 
+
+
+
 function LandingPage(){
     const navigate = useNavigate();
 
@@ -22,6 +26,15 @@ function LandingPage(){
      * Handles file upload to server
      * Sends selected file using POST request
      */
+    const handleSignOut = async (e) => { //this constant handles signout function 
+         e.preventDefault();
+            try {
+                await signOut(); // clears  Cognito session(makes user token invalid)
+                navigate("/");
+        } catch (err) {
+        console.error(err);
+       } 
+   }
     const onFileUpload = async (event) => {
         console.log("File sent!");
         const formData = new FormData(document.querySelector("#fileInput"));
@@ -139,9 +152,9 @@ function LandingPage(){
 
         <ul>
             <li>
-                <Link to="/">
-                    <h2>Sign Out</h2>
-                </Link>
+                <a href="/" onClick={handleSignOut}>
+                    <h2>Sign Out</h2>  
+                </a>
             </li>
         </ul>
     </nav>

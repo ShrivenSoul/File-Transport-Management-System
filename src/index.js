@@ -6,6 +6,7 @@ import App from './App';
 import LandingPage from './LandingPage';
 import AdminPage from "./AdminPage";
 import reportWebVitals from './reportWebVitals';
+import ProtectedRoute from './LoginProtection';
 
 import { Amplify } from "aws-amplify";
 import awsConfig from "./aws-config";
@@ -14,12 +15,20 @@ Amplify.configure(awsConfig);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+    <React.StrictMode>
     <Router>
       <Routes>
         <Route path="/" element={<App/>}/>
-        <Route path="/home" element={<LandingPage/>}/>
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/home" element={
+          <ProtectedRoute>
+            <LandingPage/>
+          </ProtectedRoute>
+        }/>
+        <Route path="/admin" element={
+          <ProtectedRoute>
+            <AdminPage />
+          </ProtectedRoute>
+        }/>
       </Routes>
     </Router>
   </React.StrictMode>
