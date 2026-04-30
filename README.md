@@ -57,11 +57,11 @@ npm install
 ```bash
 npm start
 ```
-5. Do the same with the frontend (Navigate to the main folder
+5. Do the same with the frontend (Navigate to the main folder)
 
    
 ```bash
-cd your-project-folder/Backend
+cd your-project-folder
 ```
 
 6. Install dependencies:
