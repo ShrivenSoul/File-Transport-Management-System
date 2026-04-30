@@ -28,6 +28,8 @@ function AdminPage() {
 
   /**
    * Handles user deletion
+   * A confirmation box appears to make sure they want to delete the specific user
+   * Deletes based on username and not the email of the user
    */
   const handleDeleteUser = async (username, email) => {
     const confirmDelete = window.confirm(
@@ -70,7 +72,8 @@ function AdminPage() {
   };
 
   /**
-   * Automatically loads users when page first opens
+   * Automatically loads user list when page first opens
+   * Grabs the current user and removes the ability to delete that user (a user can't delete themself)
    */
   useEffect(() => {
     fetchUsers();
@@ -143,7 +146,6 @@ function AdminPage() {
 
         {error && <p style={{ color: "red" }}>{error}</p>}
 
-        {/* Scrollable user list container */}
         <div
           style={{
             width: "500px",

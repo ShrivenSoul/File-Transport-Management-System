@@ -218,7 +218,7 @@ function LandingPage(){
             <input type="file" name="file" />
         </form>
         <button onClick={onFileUpload}>Send to server!</button>
-        <p>| nav ends here</p>
+        <p>---------------------</p>
     </div>
 
     <div>

@@ -57,11 +57,11 @@ npm install
 ```bash
 npm start
 ```
-5. Do the same with the frontend (Navigate to the main folder
+5. Do the same with the frontend (Navigate to the main folder)
 
    
 ```bash
-cd your-project-folder/Backend
+cd your-project-folder
 ```
 
 6. Install dependencies:
@@ -90,4 +90,6 @@ http://localhost:3000
 ---
 
 ## Current Release Notes
-To be added
+Admin account information:
+- email - unknownmage97@gmail.com
+- password - CD$Capstone1

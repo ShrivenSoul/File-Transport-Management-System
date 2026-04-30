@@ -23,13 +23,18 @@ const upload = multer({
   },
 });
 
+
+
+
 /**
  * Sends a file to the scanner if it comes back clean it will give the upload to S3
  * If the file is clean it sends an audit log to DB and the file goes to the S3 bucket
  * If the file is not clean it is rejected and an audit log is sent to the DynamoDB table
  * If there is a hitch it will provide an error
  */
+
 app.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
+
   const filePath = req.file.path;
   const fileName = req.file.originalname;
   const currentUser = req.user;
