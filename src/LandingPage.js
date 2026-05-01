@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./LandingPage.css";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchAuthSession, signOut } from "aws-amplify/auth";
@@ -21,7 +21,8 @@ function populateFileSelection(arr){
 
 function LandingPage(){
     const navigate = useNavigate();
-
+    const [files, setFiles] = useState([]);
+    const [selectedFile, setSelectedFile] = useState("");
     /**
      * Handles file upload to server
      * Sends selected file using POST request
@@ -68,9 +69,9 @@ function LandingPage(){
         
     }
     const getToken = async () => {
-         const session = await fetchAuthSession();
-        return session.tokens.idToken.toString();
-     };
+        const session = await fetchAuthSession();
+        return session.tokens?.accessToken?.toString();
+    };
     // Replace http://localhost:3000/ with where your server is running
     /**
      * Downloads selected file from server
@@ -81,10 +82,11 @@ function LandingPage(){
         console.log("Hi from testFileDownload");
         const response = await fetch(`http://localhost:5000/download/${selectedFile}`, {
             method: "GET",
-               headers: {
-                      "Authorization": `Bearer ${token}`
-                },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
          });
+         console.log(response);
          const body = await response.json();
          console.log(body.downloadUrl);
          window.location.href = body.downloadUrl;
@@ -96,53 +98,46 @@ function LandingPage(){
     }
 
     let list = [];
-    let selectedFile;
 
     /**
      * Fetches file list from server and populates dropdown
      */
     const getFiles = async () => {
-        
-        const token = await getToken();
-        const response = await fetch("http://localhost:5000/fileList", {
-                 method: "GET",
-                 headers: {
-            "Authorization": `Bearer ${token}` 
-                 },
-         });
-        const body = await response.json();
-        
-        console.log(body.fileList.Contents);
-        
-        for(let i = 0; i < body.fileList.Contents.length; i++){
-            list.push(body.fileList.Contents[i].Key);
-        }
-        
-        console.log(list);
-        populateFileSelection(list);
-        
-        
-           
-        
-      // const response = await fetch("http://localhost:3000/fileList");
-        // const body = await response.json();
+    try {
+    const token = await getToken();
 
-    // console.log(body.fileList.Contents);
+    const response = await fetch("http://localhost:5000/fileList", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    // for(let i = 0; i < body.fileList.Contents.length; i++){
-        //     list.push(body.fileList.Contents[i].Key);
-        // }
+    const body = await response.json();
 
-    // console.log(list);
-        // populateFileSelection(list);
+    if (!response.ok) {
+      console.error(body);
+      return;
     }
+
+    const files = body.files || [];
+
+    const list = files.map((file) => file.Key);
+
+    console.log(list);
+    populateFileSelection(list);
+
+  } catch (err) {
+    console.error("Failed to get files:", err);
+  }
+};
 
     /**
      * Gets currently selected file from dropdown
      */
     const getSelectedFile = () => {
-        selectedFile = document.getElementById('fileSelection')
-            .options[document.getElementById('fileSelection').selectedIndex].text;
+        setSelectedFile(document.getElementById('fileSelection')
+            .options[document.getElementById('fileSelection').selectedIndex].text);
 
         console.log(selectedFile);
     }

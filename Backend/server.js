@@ -12,7 +12,7 @@ import { verifyToken } from "./BackendToken.js";
 
 
 const app = express();
-
+app.use(cors({origin: "*"}));
 const FILE_MAX = 5 * 1024 * 1024 * 1024; 
 
 const upload = multer({
@@ -37,13 +37,7 @@ app.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
   const filePath = req.file.path;
   const fileName = req.file.originalname;
   const currentUser = req.user;
-  //Test User
-  /** 
-  const currentUser = {
-    userId: "123",
-    username: "bob",
-    userGroups: ["Level1"],
-  };*/
+  
 
 
   try {
@@ -111,7 +105,8 @@ app.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
  */
 app.get("/admin/audit-logs", verifyToken, async (req, res) =>  {
   try {
-    if (!req.user.groups.includes("Admin")) {
+    console.log("AUDIT LOG ROUTE HIT");
+    if (!req.user.userGroups.includes("Admin")) {
       return res.status(403).json({ error: "Access denied" });
     }
 
@@ -131,13 +126,7 @@ app.get("/admin/audit-logs", verifyToken, async (req, res) =>  {
 app.get("/download/:filename", verifyToken, async (req, res) =>  {
   const fileName = req.params.filename;
   const currentUser = req.user; 
-  //** 
- // const currentUser = {
-   /// userId: "123",
- //   username: "bob",
-   // userGroups: ["Level1"],
- // };
-  //* */ 
+ 
 
   try {
     const url = await getDownloadUrl(fileName);
@@ -178,10 +167,11 @@ app.get("/download/:filename", verifyToken, async (req, res) =>  {
 app.get("/fileList", verifyToken, async (req, res) =>  {
 
   try {
+   
     const resp = await getFileList();
 
     res.json({
-      fileList: resp
+       files: resp.Contents || []
     });
 
   } catch (err) {
@@ -197,7 +187,7 @@ app.get("/fileList", verifyToken, async (req, res) =>  {
 app.use(async (err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
 
-     const currentUser = req.user;
+  const currentUser = req.user;
 
     try {
       await writeAuditLog({
