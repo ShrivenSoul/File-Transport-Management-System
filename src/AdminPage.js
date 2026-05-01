@@ -29,8 +29,6 @@ function AdminPage() {
 
   /**
    * Handles user deletion
-   * A confirmation box appears to make sure they want to delete the specific user
-   * Deletes based on username and not the email of the user
    */
   const handleDeleteUser = async (username, email) => {
     const confirmDelete = window.confirm(
@@ -44,45 +42,86 @@ function AdminPage() {
 
     console.log("Delete confirmed for:", email);
 
-    setUsers(data);
-  } catch (err) {
-    console.error(err);
-    setError("Failed to fetch users");
-  }
-};
-/**
- * This fetches the audit logs from the backend using the user's authenticated session
- * @returns audit logs
- */
-const fetchAuditLogs = async () => {
-  try {
-    setError("");
+    try {
+      const res = await fetch(
+        "https://3hy0y4wo81.execute-api.us-east-2.amazonaws.com/deleteuser",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username })
+        }
+      );
 
-    
-    const session = await fetchAuthSession();
-    const token = session.tokens?.accessToken?.toString();
+      const data = await res.json();
+      console.log(data);
 
-    
-    const res = await fetch("http://localhost:3000/admin/audit-logs", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      if (res.ok) {
+        alert("User deleted successfully.");
+        fetchUsers();
+      } else {
+        alert(data.message || "Failed to delete user.");
+      }
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error || "Failed to fetch audit logs");
-      return;
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting user.");
     }
+  };
 
-    setAuditLogs(data);
+  /**
+   * Automatically loads users when page first opens
+   */
+  useEffect(() => {
+    fetchUsers();
 
-  } catch (err) {
-    console.error(err);
-    setError("Failed to fetch audit logs");
-  }
+    const fetchCurrentUser = async () => {
+      try {
+        const session = await fetchAuthSession();
+
+        const email = session?.tokens?.idToken?.payload?.email;
+
+        console.log("Current logged in email:", email);
+
+        setCurrentUserEmail(email);
+      } catch (err) {
+        console.error("Failed to get current user email:", err);
+      }
+    };
+  
+
+    fetchCurrentUser();
+  }, []);
+  const fetchAuditLogs = async () => {
+    try {
+      setError("");
+
+    
+      const session = await fetchAuthSession();
+      const token = session.tokens?.accessToken?.toString();
+
+    
+      const res = await fetch("http://localhost:5000/admin/audit-logs", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Failed to fetch audit logs");
+        return;
+      }
+
+      setAuditLogs(data);
+
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch audit logs");
+    }
 };
 
   return (
@@ -134,21 +173,61 @@ const fetchAuditLogs = async () => {
           Refresh
         </button>
 
-        <button onClick={fetchAuditLogs} style={{ marginLeft: "10px", marginBottom: "20px" }}>
+      
+
+        {/* Scrollable user list container */}
+        <div
+          style={{
+            width: "500px",
+            height: "400px",
+            border: "1px solid lightgray",
+            overflowY: "auto",
+            padding: "10px",
+            backgroundColor: "#fff"
+          }}
+        >
+          <ul style={{ margin: 0, padding: 0 }}>
+            {users.map((user, index) => (
+              <li
+                key={index}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                  borderBottom: "1px solid lightgray",
+                  paddingBottom: "8px"
+                }}
+              >
+                <span>{user.email}</span>
+
+                {user.email !== currentUserEmail && (
+                  <button
+                    onClick={() =>
+                      handleDeleteUser(user.username, user.email)
+                    }
+                    style={{
+                      padding: "5px 10px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    X Delete User
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+         <button onClick={fetchAuditLogs} style={{ marginLeft: "10px", marginBottom: "20px" }}>
           Load Audit Logs
         </button>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        
 
-        <ul>
-          {users.map((user, index) => (
-            <li key={index}>
-              {user.email}
-            </li>
-          ))}
-        </ul>
+        
          <h2>Audit Logs</h2>
 
+        {error && <p style={{ color: "red" }}>{error}</p>}
         <table border="1" cellPadding="8" style={{ width: "100%", background: "white" }}>
           <thead>
             <tr>

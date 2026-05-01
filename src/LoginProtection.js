@@ -10,7 +10,7 @@ function ProtectedRoute({ children }) {
     const checkAuth = async () => {
       try {
         const session = await fetchAuthSession();
-        const token = session?.tokens?.idToken;
+        const token = session?.tokens?.accessToken;
         console.log("Session:", session);        
         console.log("Token:", token);          
         console.log("isAuth:", !!token);         

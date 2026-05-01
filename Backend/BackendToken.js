@@ -2,7 +2,7 @@ import { CognitoJwtVerifier } from "aws-jwt-verify";
 
 const verifier = CognitoJwtVerifier.create({
   userPoolId: "us-east-2_2hwRL848d",   // from AWS-config.js
-  tokenUse: "id",
+  tokenUse: "access",
   clientId: "no4bg4lims05c9t2vj70nfruo",        // from AWS-config.js
 });
 
