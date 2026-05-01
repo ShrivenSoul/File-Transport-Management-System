@@ -1,0 +1,4 @@
+"""
+This function takes the ClamAV scanner and scans the file that is sent.
+This is done in tandem with the scan.js which checks if ClamAV is running
+"""
