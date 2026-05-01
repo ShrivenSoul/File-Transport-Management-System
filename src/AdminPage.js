@@ -166,27 +166,28 @@ function AdminPage() {
         </ul>
       </nav>
 
-      <div style={{ marginLeft: "200px", padding: "20px" }}>
-        <h1>Admin Dashboard</h1>
-
-        <button onClick={fetchUsers} style={{ marginBottom: "20px" }}>
-          Refresh
-        </button>
+      <div style={{ marginLeft: "200px", padding: "20px"}}>
+        <h1 style={{textIndent: "50px"}}>Admin Dashboard</h1>
 
       
 
         {/* Scrollable user list container */}
         <div
           style={{
-            width: "500px",
+            display: "inline-table",
+            width: "30%",
             height: "400px",
-            border: "1px solid lightgray",
             overflowY: "auto",
             padding: "10px",
             backgroundColor: "#fff"
           }}
         >
-          <ul style={{ margin: 0, padding: 0 }}>
+          <h2 style={{width: "20%"}}>User List</h2>
+            <button onClick={fetchUsers} style={{ marginBottom: "20px" }}>
+              Refresh
+            </button>
+          <ul style={{ margin: 0, padding: "5px", border: "1px solid lightgray",
+             }}>
             {users.map((user, index) => (
               <li
                 key={index}
@@ -218,17 +219,17 @@ function AdminPage() {
             ))}
           </ul>
         </div>
+
+        
+
+        <div style={{display: "inline-table", width: "55%", padding: "20px"}}>
+         <h2>Audit Logs</h2>
          <button onClick={fetchAuditLogs} style={{ marginLeft: "10px", marginBottom: "20px" }}>
           Load Audit Logs
         </button>
 
-        
-
-        
-         <h2>Audit Logs</h2>
-
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <table border="1" cellPadding="8" style={{ width: "100%", background: "white" }}>
+        <table border="1" cellPadding="8" style={{ width: "100%",tableLayout: "fixed", background: "white" }}>
           <thead>
             <tr>
               <th>Timestamp</th>
@@ -245,18 +246,19 @@ function AdminPage() {
           <tbody>
             {auditLogs.map((log) => (
               <tr key={log.logId}>
-                <td>{log.timestamp}</td>
-                <td>{log.username}</td>
-                <td>{Array.isArray(log.userGroups) ? log.userGroups.join(", ") : log.userGroups}</td>
-                <td>{log.action}</td>
-                <td>{log.target}</td>
-                <td>{log.result}</td>
-                <td>{log.details}</td>
-                <td>{log.ipAddress}</td>
+                <td style={{wordWrap: "break-word"}}>{log.timestamp}</td>
+                <td style={{wordWrap: "break-word"}}>{log.username}</td>
+                <td style={{wordWrap: "break-word"}}>{Array.isArray(log.userGroups) ? log.userGroups.join(", ") : log.userGroups}</td>
+                <td style={{wordWrap: "break-word"}}>{log.action}</td>
+                <td style={{wordWrap: "break-word"}}>{log.target}</td>
+                <td style={{wordWrap: "break-word"}}>{log.result}</td>
+                <td style={{wordWrap: "break-word"}}>{log.details}</td>
+                <td style={{wordWrap: "break-word"}}>{log.ipAddress}</td>
               </tr>
             ))}
           </tbody>
         </table>
+            </div>
       </div>
     </>
   );

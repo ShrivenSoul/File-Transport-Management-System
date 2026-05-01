@@ -16,12 +16,23 @@ function populateFileSelection(arr){
     });
 }
 
-
+function removeDuplicateFiles(){
+    var selectElement = document.getElementById('fileSelection');
+    const options = selectElement.querySelectorAll('option');
+    const inDropdown = new Set();
+    options.forEach(option => {
+        if(inDropdown.has(option.innerHTML)){
+            option.remove();
+        }
+        else{
+            inDropdown.add(option.innerHTML);
+        }
+    });
+}
 
 
 function LandingPage(){
     const navigate = useNavigate();
-    const [files, setFiles] = useState([]);
     const [selectedFile, setSelectedFile] = useState("");
     /**
      * Handles file upload to server
@@ -37,22 +48,28 @@ function LandingPage(){
        } 
    }
     const onFileUpload = async (event) => {
-        console.log("File sent!");
-        
-        const token = await getToken();
-        const formData = new FormData(document.querySelector("#fileInput"));
-        console.log(formData);
-        const response = await fetch("http://localhost:5000/upload", {
-             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}` 
-                },
-            body: formData,
-        }).then((response) => response.json())
-         .then((data) => { console.log(data); });
+        try{
 
-         console.log(response);
-         event.preventDefault();
+            console.log("File sent!");
+            
+            const token = await getToken();
+            const formData = new FormData(document.querySelector("#fileInput"));
+            console.log(document.querySelector("#fileInput"));
+            console.log(formData);
+            const response = await fetch("http://localhost:5000/upload", {
+             method: "POST",
+             headers: {
+                 "Authorization": `Bearer ${token}` 
+                },
+                body: formData,
+            }).then((response) => response.json())
+            .then((data) => { console.log(data); });
+            
+            console.log(response);
+            event.preventDefault();
+        } catch(err){
+            console.error("No file input: ", err)
+        }
         
         // REPLACE LINK HERE WITH WHERE YOUR SERVER IS RUNNING
       //** 
@@ -80,24 +97,28 @@ function LandingPage(){
 
         const token = await getToken();
         console.log("Hi from testFileDownload");
-        const response = await fetch(`http://localhost:5000/download/${selectedFile}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-         });
-         console.log(response);
-         const body = await response.json();
-         console.log(body.downloadUrl);
-         window.location.href = body.downloadUrl;
+        try {
+
+            const response = await fetch(`http://localhost:5000/download/${selectedFile}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(response);
+            const body = await response.json();
+            console.log(body.downloadUrl);
+            window.location.href = body.downloadUrl;
+        }
+        catch(err){
+            console.error("Failed to download file: ", err)
+        }
 
       //  const response = await fetch(`http://localhost:3000/download/${selectedFile}`);
       //  const body = await response.json();
       //  console.log(body.downloadUrl);
       //  window.location.href = body.downloadUrl;
     }
-
-    let list = [];
 
     /**
      * Fetches file list from server and populates dropdown
@@ -126,7 +147,10 @@ function LandingPage(){
 
     console.log(list);
     populateFileSelection(list);
-
+    removeDuplicateFiles();
+    if(selectedFile === ""){
+        getSelectedFile();
+    }
   } catch (err) {
     console.error("Failed to get files:", err);
   }
