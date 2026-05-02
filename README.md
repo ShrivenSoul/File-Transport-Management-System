@@ -11,6 +11,7 @@ Before running the project, make sure you have the following installed:
 - **React.js**
 - **Node.js**
 - **ClamAV**
+- **pyclamd**
 
 You can verify installation by running:
 
@@ -35,6 +36,12 @@ ClamAV installation/setup:
 8. Drag those files to the main folder and they will sort
 9. Next run freshclam this will make the malware database
 10. After that is done you can run clamd to start the antivirus for the scanner
+
+Pyclamd installation:
+
+Use pip install in commandline
+
+pip install pyClamd
 
 After downloading/cloning the project files:
 
