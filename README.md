@@ -93,19 +93,19 @@ Creating DynamoDB:
 In the backend create a file named .env. 
 
 
-copy and paste this in the .env:
+copy and paste this in the .env (remove the numbers for formatting):
 
 
 # AWS Credentials (IAM user)
-AWS_REGION=(Your region can be found in the top right)
-AWS_ACCESS_KEY=(The access key line you saved earlier)
-AWS_SECRET_KEY=(The secret key line you saved earlier)
+1. AWS_REGION=(Your region can be found in the top right)
+2. AWS_ACCESS_KEY=(The access key line you saved earlier)
+3. AWS_SECRET_KEY=(The secret key line you saved earlier)
 
 # S3 Bucket
-S3_BUCKET=(Name of your bucket)
+4. S3_BUCKET=(Name of your bucket)
 
 # DynamoDB (audit logs)
-AUDIT_TABLE=(Name of your DynamoDB table)
+5. AUDIT_TABLE=(Name of your DynamoDB table)
 
 .env is finished and AWS is setup for app after these steps.
 
