@@ -167,3 +167,26 @@ http://localhost:3000
 Admin account information:
 - email - unknownmage97@gmail.com
 - password - CD$Capstone1
+
+Milestone 1:
+1. Log in page
+2. Research
+
+Milestone 2: 
+1. Log-in functionality
+2. Page structure for other pages
+
+Milestone 3:
+1. File scanner
+2. Simple File Transfer (Upload and Download)
+3. AWS functionality/databases
+
+Milestone 4:
+1. Group creation (Admin group)
+2. Admin priveleges (User list)
+3. Admin priveleges (Audit log only backend working)
+
+Milestone 5: 
+1. Admin priveleges (deleting users)
+2. Admin priveleges (Audit log functional in frontend)
+3. Completion of Application
