@@ -43,6 +43,63 @@ Use pip install in commandline
 
 pip install pyClamd
 
+
+The reason .env isn't included into the setup is .env's cannot be public 
+as they contain access keys to users which would compromise your account.
+
+Setting up .env and AWS:
+
+Creating IAM user:
+
+1. Create an acocunt for AWS
+2. Log in
+3. Go to IAM user in the search bar
+4. Create a user
+5. Give user a name and click next
+6. Click attatch policies directly
+7. Give user AmazonDynamoDBFullAccess and AmazonS3FullAccess
+8. Review and create the user
+9. Go to the user and in the summary click create access key
+10. Click next and then select Application running outside AWS
+11. Set the description of the key and make it memorable
+12. Take note of both access key and secret access key as they are both needed
+
+Creating S3:
+
+1. Go to S3 form the search bar
+2. Click on general purpose buckets on the left-hand side
+3. Click create bucket
+4. Name the bucket
+5. Leave everything default and click create bucket
+
+Creating DynamoDB:
+
+1. Search DynamoDB in the search bar
+2. Click Tables on the left-hand side
+3. Click create table on the top-right
+4. Name the table
+5. Make the partition key name "logId" without quotations
+6. leave everything default
+7. create table
+
+In the backend create a file named .env. 
+
+copy and paste this in the .env:
+
+# AWS Credentials (IAM user)
+AWS_REGION=(Your region can be found in the top right)
+AWS_ACCESS_KEY=(The access key line you saved earlier)
+AWS_SECRET_KEY=(The secret key line you saved earlier)
+
+# S3 Bucket
+S3_BUCKET=(Name of your bucket)
+
+# DynamoDB (audit logs)
+AUDIT_TABLE=(Name of your DynamoDB table)
+
+.env is finished and AWS is setup for app after these steps.
+
+
 After downloading/cloning the project files:
 
 0. Open clamd to run ClamAV
