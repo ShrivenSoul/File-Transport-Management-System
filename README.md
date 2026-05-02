@@ -183,10 +183,10 @@ Milestone 3:
 
 Milestone 4:
 1. Group creation (Admin group)
-2. Admin priveleges (User list)
-3. Admin priveleges (Audit log only backend working)
+2. Admin privileges (User list)
+3. Admin privileges (Audit log only backend working)
 
 Milestone 5: 
-1. Admin priveleges (deleting users)
-2. Admin priveleges (Audit log functional in frontend)
+1. Admin privileges (deleting users)
+2. Admin privileges (Audit log functional in frontend)
 3. Completion of Application
