@@ -47,9 +47,12 @@ pip install pyClamd
 The reason .env isn't included into the setup is .env's cannot be public 
 as they contain access keys to users which would compromise your account.
 
+
 Setting up .env and AWS:
 
+
 Creating IAM user:
+
 
 1. Create an acocunt for AWS
 2. Log in
@@ -64,7 +67,9 @@ Creating IAM user:
 11. Set the description of the key and make it memorable
 12. Take note of both access key and secret access key as they are both needed
 
+
 Creating S3:
+
 
 1. Go to S3 form the search bar
 2. Click on general purpose buckets on the left-hand side
@@ -72,7 +77,9 @@ Creating S3:
 4. Name the bucket
 5. Leave everything default and click create bucket
 
+
 Creating DynamoDB:
+
 
 1. Search DynamoDB in the search bar
 2. Click Tables on the left-hand side
@@ -82,9 +89,12 @@ Creating DynamoDB:
 6. leave everything default
 7. create table
 
+
 In the backend create a file named .env. 
 
+
 copy and paste this in the .env:
+
 
 # AWS Credentials (IAM user)
 AWS_REGION=(Your region can be found in the top right)
