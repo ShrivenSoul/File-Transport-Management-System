@@ -89,6 +89,12 @@ http://localhost:3000
 
 ---
 
+## Documentation
+
+To view documentation for this project, run out/index.html on a live server. 
+
+---
+
 ## Current Release Notes
 Admin account information:
 - email - unknownmage97@gmail.com
