@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
 import "./LandingPage.css";
 
+/** @namespace */
 function AdminPage() {
   const [users, setUsers] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
@@ -93,6 +94,9 @@ function AdminPage() {
 
     fetchCurrentUser();
   }, []);
+  /**
+   * Fetches audit log information
+   */
   const fetchAuditLogs = async () => {
     try {
       setError("");
