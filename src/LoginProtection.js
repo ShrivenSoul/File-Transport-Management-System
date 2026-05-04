@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
 
-
+/**
+ * Checks user credentials for authentication 
+ */
 function ProtectedRoute({ children }) {
   const [isAuth, setIsAuth] = useState(null);
 
