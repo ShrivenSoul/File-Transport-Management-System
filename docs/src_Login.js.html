@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/Login.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/Login.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  signUp,
+  confirmSignUp,
+  signIn,
+  signOut,
+  resetPassword,
+  confirmResetPassword,
+  fetchAuthSession
+} from "aws-amplify/auth";
+
+/** @namespace */
+function Signup() {
+  const [mode, setMode] = useState("signup");
+  let navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    forgotPasswordEmail: "",
+    verificationCode: "",
+    newPassword: "",
+  });
+
+  const [error, setError] = useState("");
+
+  const requirements = [
+    "At least 8 characters",
+    "One uppercase letter",
+    "One number",
+    "One special character",
+  ];
+
+  /**
+   * confirms user password has correct requirements
+   * @param {string} password
+   * @returns {Array} list of unmet requirements
+   */
+  const validatePassword = (password) => {
+    const errors = [];
+
+    if (password.length &lt; 8) errors.push("At least 8 characters");
+    if (!/(?=.*[A-Z])/.test(password)) errors.push("One uppercase letter");
+    if (!/(?=.*[0-9])/.test(password)) errors.push("One number");
+    if (!/(?=.*[!@#$%^&amp;*])/.test(password))
+      errors.push("One special character");
+
+    return errors;
+  };
+
+  const passwordErrors = validatePassword(formData.password);
+
+  /**
+   * Handles any user input changes and updates state
+   * @param {object} e - event object
+   */
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  /**
+   * Handles user signup using AWS Cognito
+   * Validates password and sends signup request to AWS
+   * @param {object} e - event object
+   */
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (passwordErrors.length > 0) {
+      setError("Password does not meet requirements");
+      return;
+    }
+
+    try {
+      await signUp({
+        username: formData.email,
+        password: formData.password,
+        options: {
+          userAttributes: {
+            email: formData.email,
+          },
+        },
+      });
+
+      setMode("confirmSignup");
+    } catch (err) {
+      setError(err.message || "Signup failed");
+    }
+  };
+
+  /**
+   * Confirms user signup using verification code
+   * Verification code is sent to the user's email
+   * @param {object} e - event object
+   */
+  const handleConfirmSignup = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await confirmSignUp({
+        username: formData.email,
+        confirmationCode: formData.verificationCode,
+      });
+
+      alert("Account verified! You can now log in.");
+      setMode("login");
+    } catch (err) {
+      setError(err.message || "Invalid verification code");
+    }
+  };
+
+  /**
+   * Handles user login using AWS Cognito
+   * Signs out any existing user first to avoid session conflicts
+   * Redirects to home page on success
+   * Grabs session token and logs the login in the audit log
+   * @param {object} e - event object
+   */
+  const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+
+  try {
+    await signOut();
+
+    const signInResult = await signIn({
+      username: formData.email,
+      password: formData.password,
+    });
+
+    console.log("SignIn result:", signInResult); 
+
+    const session = await fetchAuthSession();
+    console.log("Session after login:", session); 
+
+    navigate("/home");
+  } catch (err) {
+    console.log("Login error:", err);
+    setError(err.message || "Login failed");
+  }
+};
+
+  /**
+   * Sends password reset code to user's email
+   * @param {object} e - event object
+   */
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await resetPassword({
+        username: formData.forgotPasswordEmail,
+      });
+
+      setMode("resetPassword");
+    } catch (err) {
+      setError(err.message || "Failed to send reset code");
+    }
+  };
+
+  /**
+   * Confirms password reset with verification code
+   * @param {object} e - event object
+   */
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await confirmResetPassword({
+        username: formData.forgotPasswordEmail,
+        confirmationCode: formData.verificationCode,
+        newPassword: formData.newPassword,
+      });
+
+      alert("Password reset successful!");
+      setMode("login");
+    } catch (err) {
+      setError(err.message || "Password reset failed");
+    }
+  };
+
+  const containerStyle = {
+    maxWidth: "400px",
+    margin: "80px auto",
+    padding: "30px",
+    border: "1px solid #ccc",
+    background: "#ddd",
+    borderRadius: "10px",
+    textAlign: "center",
+    fontFamily: "Arial",
+  };
+
+  const inputStyle = {
+    width: "93%",
+    padding: "10px",
+    margin: "10px 0",
+  };
+
+  const buttonStyle = {
+    width: "100%",
+    padding: "10px",
+    marginTop: "10px",
+    cursor: "pointer",
+  };
+
+  return (
+    &lt;div style={containerStyle}>
+      &lt;h2>Simple Auth Page&lt;/h2>
+
+      &lt;div>
+        &lt;button onClick={() => setMode("signup")}>Sign Up&lt;/button>{" "}
+        &lt;button onClick={() => setMode("login")}>Login&lt;/button>
+      &lt;/div>
+
+      {mode === "signup" &amp;&amp; (
+        &lt;form onSubmit={handleSignup}>
+          &lt;input style={inputStyle} name="email" type="email" placeholder="Email" onChange={handleChange} required />
+          &lt;input style={inputStyle} name="password" type="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
+          &lt;input style={inputStyle} name="confirmPassword" type="password" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} required />
+
+          &lt;div style={{ fontSize: "12px", textAlign: "left" }}>
+            {requirements.map((req) => {
+              const isMet =
+                formData.password.length > 0 &amp;&amp;
+                !passwordErrors.includes(req);
+
+              return (
+                &lt;div key={req} style={{ color: isMet ? "green" : "red" }}>
+                  {req}
+                &lt;/div>
+              );
+            })}
+          &lt;/div>
+
+          &lt;button style={buttonStyle} type="submit">Sign Up&lt;/button>
+          {error &amp;&amp; &lt;p style={{ color: "red" }}>{error}&lt;/p>}
+        &lt;/form>
+      )}
+
+      {mode === "confirmSignup" &amp;&amp; (
+        &lt;form onSubmit={handleConfirmSignup}>
+          &lt;input style={inputStyle} name="verificationCode" placeholder="Verification Code" onChange={handleChange} required />
+          &lt;button style={buttonStyle} type="submit">Verify Account&lt;/button>
+          {error &amp;&amp; &lt;p style={{ color: "red" }}>{error}&lt;/p>}
+        &lt;/form>
+      )}
+
+      {mode === "login" &amp;&amp; (
+        &lt;>
+          &lt;form onSubmit={handleLogin}>
+            &lt;input style={inputStyle} name="email" type="email" placeholder="Email" onChange={handleChange} required />
+            &lt;input style={inputStyle} name="password" type="password" placeholder="Password" onChange={handleChange} required />
+            &lt;button style={buttonStyle} type="submit">Login&lt;/button>
+          &lt;/form>
+
+          &lt;button
+            style={{ marginTop: "10px", background: "none", border: "none", color: "blue", cursor: "pointer" }}
+            onClick={() => setMode("forgotPassword")}
+          >
+            Forgot Password?
+          &lt;/button>
+
+          {error &amp;&amp; &lt;p style={{ color: "red" }}>{error}&lt;/p>}
+        &lt;/>
+      )}
+
+      {mode === "forgotPassword" &amp;&amp; (
+        &lt;form onSubmit={handleForgotPassword}>
+          &lt;input style={inputStyle} name="forgotPasswordEmail" type="email" placeholder="Enter your email" onChange={handleChange} required />
+          &lt;button style={buttonStyle} type="submit">Send Reset Code&lt;/button>
+          {error &amp;&amp; &lt;p style={{ color: "red" }}>{error}&lt;/p>}
+        &lt;/form>
+      )}
+
+      {mode === "resetPassword" &amp;&amp; (
+        &lt;form onSubmit={handleResetPassword}>
+          &lt;input style={inputStyle} name="verificationCode" placeholder="Verification Code" onChange={handleChange} required />
+          &lt;input style={inputStyle} name="newPassword" type="password" placeholder="New Password" onChange={handleChange} required />
+          &lt;button style={buttonStyle} type="submit">Reset Password&lt;/button>
+          {error &amp;&amp; &lt;p style={{ color: "red" }}>{error}&lt;/p>}
+        &lt;/form>
+      )}
+    &lt;/div>
+  );
+}
+
+export default Signup;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="AdminPage.html">AdminPage</a></li><li><a href="LandingPage.html">LandingPage</a></li><li><a href="Signup.html">Signup</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ProtectedRoute">ProtectedRoute</a></li><li><a href="global.html#awsConfig">awsConfig</a></li><li><a href="global.html#fileSizeLimit">fileSizeLimit</a></li><li><a href="global.html#get/admin/audit-logs">get/admin/audit-logs</a></li><li><a href="global.html#get/download/:filename">get/download/:filename</a></li><li><a href="global.html#get/fileList">get/fileList</a></li><li><a href="global.html#getAuditLogs">getAuditLogs</a></li><li><a href="global.html#getDownloadUrl">getDownloadUrl</a></li><li><a href="global.html#getFileList">getFileList</a></li><li><a href="global.html#populateFileSelection">populateFileSelection</a></li><li><a href="global.html#post/upload">post/upload</a></li><li><a href="global.html#removeDuplicateFiles">removeDuplicateFiles</a></li><li><a href="global.html#scanFile">scanFile</a></li><li><a href="global.html#uploadToS3">uploadToS3</a></li><li><a href="global.html#writeAuditLog">writeAuditLog</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue May 05 2026 15:58:13 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
