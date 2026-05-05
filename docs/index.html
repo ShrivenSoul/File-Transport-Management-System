@@ -42,6 +42,174 @@
 
 
 
+    <section>
+        <article><h1>File Transport Management System</h1>
+<p>A web-based file transport management application built with <strong>React.js</strong> and <strong>Node.js</strong>.</p>
+<hr>
+<h2>Requirements</h2>
+<p>Before running the project, make sure you have the following installed:</p>
+<ul>
+<li><strong>React.js</strong></li>
+<li><strong>Node.js</strong></li>
+<li><strong>ClamAV</strong></li>
+<li><strong>pyclamd</strong></li>
+</ul>
+<p>You can verify installation by running:</p>
+<pre class="prettyprint source lang-bash"><code>node -v
+npm -v
+</code></pre>
+<hr>
+<h2>Installation &amp; Setup</h2>
+<p>ClamAV installation/setup:</p>
+<ol>
+<li>To download ClamAV you ened to go to their website and select what OS your PC has and grab the zip folder</li>
+<li>Extract the folder anywhere and open it</li>
+<li>In the folder will be another folder named conf_examples</li>
+<li>There should be 2 files that have the .example tags open both in an editor</li>
+<li>Scroll down until you see the word &quot;EXAMPLE&quot; with no &quot;#&quot; before it</li>
+<li>Add the &quot;#&quot; before it on both files</li>
+<li>Save and close the editor and rename those files without the .example after .conf</li>
+<li>Drag those files to the main folder and they will sort</li>
+<li>Next run freshclam this will make the malware database</li>
+<li>After that is done you can run clamd to start the antivirus for the scanner</li>
+</ol>
+<p>Pyclamd installation:</p>
+<p>Use pip install in commandline</p>
+<p>pip install pyClamd</p>
+<p>The reason .env isn't included into the setup is .env's cannot be public
+as they contain access keys to users which would compromise your account.</p>
+<p>Setting up .env and AWS:</p>
+<p>Creating IAM user:</p>
+<ol>
+<li>Create an acocunt for AWS</li>
+<li>Log in</li>
+<li>Go to IAM user in the search bar</li>
+<li>Create a user</li>
+<li>Give user a name and click next</li>
+<li>Click attatch policies directly</li>
+<li>Give user AmazonDynamoDBFullAccess and AmazonS3FullAccess</li>
+<li>Review and create the user</li>
+<li>Go to the user and in the summary click create access key</li>
+<li>Click next and then select Application running outside AWS</li>
+<li>Set the description of the key and make it memorable</li>
+<li>Take note of both access key and secret access key as they are both needed</li>
+</ol>
+<p>Creating S3:</p>
+<ol>
+<li>Go to S3 form the search bar</li>
+<li>Click on general purpose buckets on the left-hand side</li>
+<li>Click create bucket</li>
+<li>Name the bucket</li>
+<li>Leave everything default and click create bucket</li>
+</ol>
+<p>Creating DynamoDB:</p>
+<ol>
+<li>Search DynamoDB in the search bar</li>
+<li>Click Tables on the left-hand side</li>
+<li>Click create table on the top-right</li>
+<li>Name the table</li>
+<li>Make the partition key name &quot;logId&quot; without quotations</li>
+<li>leave everything default</li>
+<li>create table</li>
+</ol>
+<p>In the backend create a file named .env.</p>
+<p>copy and paste this in the .env (remove the numbers for formatting):</p>
+<h1>AWS Credentials (IAM user)</h1>
+<ol>
+<li>AWS_REGION=(Your region can be found in the top right)</li>
+<li>AWS_ACCESS_KEY=(The access key line you saved earlier)</li>
+<li>AWS_SECRET_KEY=(The secret key line you saved earlier)</li>
+</ol>
+<h1>S3 Bucket</h1>
+<ol start="4">
+<li>S3_BUCKET=(Name of your bucket)</li>
+</ol>
+<h1>DynamoDB (audit logs)</h1>
+<ol start="5">
+<li>AUDIT_TABLE=(Name of your DynamoDB table)</li>
+</ol>
+<p>.env is finished and AWS is setup for app after these steps.</p>
+<p>After downloading/cloning the project files:</p>
+<ol start="0">
+<li>Open clamd to run ClamAV</li>
+<li>Open <strong>Command Prompt / Terminal</strong></li>
+<li>Navigate to the Backend folder (you should see the <code>service</code> folder)</li>
+</ol>
+<pre class="prettyprint source lang-bash"><code>cd your-project-folder/Backend
+</code></pre>
+<ol start="3">
+<li>Install dependencies:</li>
+</ol>
+<pre class="prettyprint source lang-bash"><code>npm install
+</code></pre>
+<ol start="4">
+<li>Start the application:</li>
+</ol>
+<pre class="prettyprint source lang-bash"><code>npm start
+</code></pre>
+<ol start="5">
+<li>Do the same with the frontend (Navigate to the main folder)</li>
+</ol>
+<pre class="prettyprint source lang-bash"><code>cd your-project-folder
+</code></pre>
+<ol start="6">
+<li>Install dependencies:</li>
+</ol>
+<pre class="prettyprint source lang-bash"><code>npm install
+</code></pre>
+<ol start="7">
+<li>Start the application:</li>
+</ol>
+<pre class="prettyprint source lang-bash"><code>npm start
+</code></pre>
+<h2>Running the Application</h2>
+<p>After starting the project:</p>
+<ul>
+<li>Your browser should automatically open</li>
+<li>The application will run on:</li>
+</ul>
+<pre class="prettyprint source lang-bash"><code>http://localhost:3000
+</code></pre>
+<hr>
+<h2>Documentation</h2>
+<p>To view documentation for this project, run out/index.html on a live server.</p>
+<hr>
+<h2>Current Release Notes</h2>
+<p>Admin account information:</p>
+<ul>
+<li>email - unknownmage97@gmail.com</li>
+<li>password - CD$Capstone1</li>
+</ul>
+<p>Milestone 1:</p>
+<ol>
+<li>Log in page</li>
+<li>Research</li>
+</ol>
+<p>Milestone 2:</p>
+<ol>
+<li>Log-in functionality</li>
+<li>Page structure for other pages</li>
+</ol>
+<p>Milestone 3:</p>
+<ol>
+<li>File scanner</li>
+<li>Simple File Transfer (Upload and Download)</li>
+<li>AWS functionality/databases</li>
+</ol>
+<p>Milestone 4:</p>
+<ol>
+<li>Group creation (Admin group)</li>
+<li>Admin privileges (User list)</li>
+<li>Admin privileges (Audit log only backend working)</li>
+</ol>
+<p>Milestone 5:</p>
+<ol>
+<li>Admin privileges (deleting users)</li>
+<li>Admin privileges (Audit log functional in frontend)</li>
+<li>Completion of Application</li>
+</ol></article>
+    </section>
+
 
 
 
@@ -56,7 +224,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue May 05 2026 15:58:13 GMT-0500 (Central Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue May 05 2026 16:21:31 GMT-0500 (Central Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
